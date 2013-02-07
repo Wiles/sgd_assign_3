@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Shooter;
-
 
 namespace Asteroids
 {
@@ -12,6 +10,26 @@ namespace Asteroids
         // Position of the Player relative to the upper left side of the screen
         public double X { get; set; }
         public double Y { get; set; }
+        public double MaxSpeed { get; set; }
+        private double _speed;
+        public double Speed {
+            get { return _speed; }
+            set { if (value <= 0)
+            {
+                _speed = 0;
+            }
+            else if (value > MaxSpeed)
+            {
+                _speed = 5;
+            }
+            else
+            {
+                _speed = value;
+            }
+            {
+                
+            }} 
+        }
         private Texture2D _texture;
         public Vector2 Position {
             get { return new Vector2((int)X, (int)Y);}
@@ -36,8 +54,9 @@ namespace Asteroids
         }
 
         // Initialize the player
-        public void Initialize(Texture2D texture, Vector2 position)
+        public void Initialize(Texture2D texture, Vector2 position, float MaxSpeed)
         {
+            this.MaxSpeed = MaxSpeed;
             // Set the starting position of the player around the middle of the screen and to the back
             X = position.X;
             Y = position.Y;

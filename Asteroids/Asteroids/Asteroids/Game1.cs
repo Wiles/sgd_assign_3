@@ -25,11 +25,13 @@ namespace Asteroids
 
         private TimeSpan fireTime;
         private TimeSpan previousFireTime;
-        private float playerMoveSpeed = 2.0f;
-        private float projectileMoveSpeed = 4.0f;
+        private static float maxSpeed = 5.0f;
+        private static float projectileMoveSpeed = maxSpeed + 1;
+
 
         private Texture2D projectileTexture;
         private Texture2D playerTexture;
+        private Texture2D asteroidTexture;
         private List<Projectile> projectiles = new List<Projectile>();
 
         public Game1()
@@ -66,13 +68,14 @@ namespace Asteroids
 
             playerTexture = Content.Load<Texture2D>("Player");
 
+            asteroidTexture = Content.Load<Texture2D>("Asteroid");
 
             var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
                                              + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
                 ,
                                              GraphicsDevice.Viewport.TitleSafeArea.Y
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
-            player.Initialize(playerTexture, playerPosition);
+            player.Initialize(playerTexture, playerPosition, maxSpeed);
             // TODO: use this.Content to load your game content here
         }
 
@@ -119,8 +122,11 @@ namespace Asteroids
             }
             if (currentKeyboardState.IsKeyDown(Keys.Up))
             {
-                player.Y += playerMoveSpeed * Math.Sin(player.Angle);
-                player.X += playerMoveSpeed * Math.Cos(player.Angle);
+                player.Speed += .025;
+            }
+            else
+            {
+                player.Speed -= .025;
             }
             if (currentKeyboardState.IsKeyDown(Keys.Space))
             {
@@ -134,6 +140,8 @@ namespace Asteroids
                     AddProjectile(player.Position + new Vector2((int)(player.Width / 2.0), (int)(player.Height / 2.0)));
                 }
             }
+            player.Y += player.Speed * Math.Sin(player.Angle);
+            player.X += player.Speed * Math.Cos(player.Angle);
             
             // Make sure that the player does not go out of bounds
             if (player.X > GraphicsDevice.Viewport.Width + player.Width)
