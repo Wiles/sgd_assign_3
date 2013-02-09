@@ -22,10 +22,10 @@ namespace Asteroids
             get { return _radians; }
         }
 
-        private double _scale;
+        public int Generation { get; set; }
 
-        public double Scale {
-            get { return _scale; }
+        private double Scale {
+            get { return 1.0/Generation; }
         }
 
         // State of the Projectile
@@ -37,13 +37,13 @@ namespace Asteroids
         // Get the width of the projectile ship
         public int Width
         {
-            get { return (int) (_texture.Width * _scale); }
+            get { return (int) (_texture.Width * Scale); }
         }
 
         // Get the height of the projectile ship
         public int Height
         {
-            get { return (int) (_texture.Height * _scale); }
+            get { return (int)(_texture.Height * Scale); }
         }
 
         // Determines how fast the projectile moves
@@ -54,7 +54,7 @@ namespace Asteroids
         }
 
 
-        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed, double scale)
+        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed, int generation)
         {
             _texture = texture;
             Position = position;
@@ -68,7 +68,8 @@ namespace Asteroids
             _y = position.Y;
 
             _radians = radians;
-            _scale = scale;
+
+            Generation = generation;
         }
 
         public void Update()
@@ -95,13 +96,13 @@ namespace Asteroids
         public void Draw(SpriteBatch spriteBatch)
         {
                 spriteBatch.Draw(_texture, Position, null, Color.White, 0f,
-                                 new Vector2((int) (Width/2.0), (int) (Height/2.0)), (float)_scale, SpriteEffects.None, 0f);
+                                 new Vector2((int) (Width/2.0), (int) (Height/2.0)), (float)Scale, SpriteEffects.None, 0f);
         }
 
         public Circle GetCircle()
         {
-            double radius = _texture.Width/2.0*_scale;
-            return new Circle((int) (_x + radius), (int) (_y + radius), _texture.Width / 2.0 * _scale);
+            double radius = _texture.Width / 2.0 * Scale;
+            return new Circle((int)(_x + radius), (int)(_y + radius), _texture.Width / 2.0 * Scale);
         }
     }
 }

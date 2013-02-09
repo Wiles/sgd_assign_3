@@ -76,7 +76,7 @@ namespace Asteroids
             foreach (var n in Enumerable.Range(1,1))
             {
                 var asteroid = new Asteroid();
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(0, 0), 0, 1.0f, 1.0);
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(0, 0), 0, 1.0f, 1);
                 _asteroids.Add(asteroid);
             }
         }
@@ -216,14 +216,14 @@ namespace Asteroids
                 if (_asteroids[i].Active == false)
                 {
                     var parent = _asteroids[i];
-                    if (parent.Scale > 1.0/4.0)
+                    if (parent.Generation <= 2)
                     {
                         var asteroid = new Asteroid();
-                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians - rand.Next(5, 25) * Math.PI / 180, parent.Speed, parent.Scale/2);
+                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians - rand.Next(5, 25) * Math.PI / 180, parent.Speed, parent.Generation + 1);
                         _asteroids.Add(asteroid);
 
                         asteroid = new Asteroid();
-                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians + rand.Next(5, 25) * Math.PI/180, parent.Speed, parent.Scale/2);
+                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians + rand.Next(5, 25) * Math.PI / 180, parent.Speed, parent.Generation + 1);
                         _asteroids.Add(asteroid);
                     }
                     _asteroids.RemoveAt(i);
