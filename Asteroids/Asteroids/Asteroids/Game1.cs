@@ -2,41 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using Shooter;
 
 namespace Asteroids
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        private Player player;
+        GraphicsDeviceManager _graphics;
+        SpriteBatch _spriteBatch;
+        private Player _player;
+        private KeyboardState _currentKeyboardState;
 
-        private KeyboardState currentKeyboardState;
-
-        private TimeSpan fireTime;
-        private TimeSpan previousFireTime;
-        private static float maxSpeed = 5.0f;
-        private static float projectileMoveSpeed = maxSpeed + 1;
+        private TimeSpan _fireTime;
+        private TimeSpan _previousFireTime;
+        private const float MaxSpeed = 5.0f;
+        private const float ProjectileMoveSpeed = MaxSpeed + 1;
 
 
-        private Texture2D projectileTexture;
-        private Texture2D playerTexture;
-        private Texture2D asteroidTexture;
-        private List<Projectile> projectiles = new List<Projectile>();
+        private Texture2D _projectileTexture;
+        private Texture2D _playerTexture;
+        private Texture2D _asteroidTexture;
+        private readonly List<Projectile> _projectiles = new List<Projectile>();
+        private readonly List<Asteroid> _asteroids = new List<Asteroid>(); 
+
+        private readonly Random rand = new Random();
 
         public Game1()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -48,9 +45,8 @@ namespace Asteroids
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            player = new Player();
-            fireTime = TimeSpan.FromSeconds(.25f);
+            _player = new Player();
+            _fireTime = TimeSpan.FromSeconds(.25f);
             base.Initialize();
         }
 
@@ -61,22 +57,28 @@ namespace Asteroids
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
 
-            projectileTexture = Content.Load<Texture2D>("Projectile");
+            _projectileTexture = Content.Load<Texture2D>("Projectile");
 
-            playerTexture = Content.Load<Texture2D>("Player");
+            _playerTexture = Content.Load<Texture2D>("Player");
 
-            asteroidTexture = Content.Load<Texture2D>("Asteroid");
+            _asteroidTexture = Content.Load<Texture2D>("Asteroid");
 
             var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
                                              + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
                 ,
                                              GraphicsDevice.Viewport.TitleSafeArea.Y
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
-            player.Initialize(playerTexture, playerPosition, maxSpeed);
-            // TODO: use this.Content to load your game content here
+            _player.Initialize(_playerTexture, playerPosition, MaxSpeed);
+
+            foreach (var n in Enumerable.Range(1,1))
+            {
+                var asteroid = new Asteroid();
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(0, 0), 0, 1.0f, 1.0);
+                _asteroids.Add(asteroid);
+            }
         }
 
         /// <summary>
@@ -85,7 +87,10 @@ namespace Asteroids
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            _projectileTexture.Dispose();
+            _asteroidTexture.Dispose();
+            _playerTexture.Dispose();
+            _spriteBatch.Dispose();
         }
 
         /// <summary>
@@ -101,77 +106,128 @@ namespace Asteroids
                 Exit();
             }
 
-            currentKeyboardState = Keyboard.GetState();
+            _currentKeyboardState = Keyboard.GetState();
             UpdatePlayer(gameTime);
             UpdateProjectiles();
+            UpdateCollisions();
+            UpdateAsteroids();
             base.Update(gameTime);
+        }
+
+        private void UpdateCollisions()
+        {
+            foreach (var projectile in _projectiles)
+            {
+                if (projectile.Active)
+                {
+                    foreach (var asteroid in _asteroids)
+                    {
+                        if (asteroid.Active)
+                        {
+                            if (asteroid.GetCircle().Intersects(projectile.GetCircle()))
+                            {
+                                asteroid.Active = false;
+                                projectile.Active = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                }
+            }
         }
 
         private void UpdatePlayer(GameTime gameTime)
         {
-            player.Update();
+            _player.Update();
 
             // Use the Keyboard / Dpad
-            if (currentKeyboardState.IsKeyDown(Keys.Left))
+            if (_currentKeyboardState.IsKeyDown(Keys.Left))
             {
-                player.Angle -= 0.1f;
+                _player.Angle -= 0.1f;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Right))
+            if (_currentKeyboardState.IsKeyDown(Keys.Right))
             {
-                player.Angle += 0.1f;
+                _player.Angle += 0.1f;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Up))
+            if (_currentKeyboardState.IsKeyDown(Keys.Up))
             {
-                player.Speed += .025;
+                _player.Speed += .025;
             }
             else
             {
-                player.Speed -= .025;
+                _player.Speed -= .025;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Space))
+            if (_currentKeyboardState.IsKeyDown(Keys.Space))
             {
                 // Fire only every interval we set as the fireTime
-                if (gameTime.TotalGameTime - previousFireTime > fireTime)
+                if (gameTime.TotalGameTime - _previousFireTime > _fireTime)
                 {
                     // Reset our current time
-                    previousFireTime = gameTime.TotalGameTime;
+                    _previousFireTime = gameTime.TotalGameTime;
 
                     // Add the projectile, but add it to the front and center of the player
-                    AddProjectile(player.Position + new Vector2((int)(player.Width / 2.0), (int)(player.Height / 2.0)));
+                    AddProjectile();
                 }
             }
-            player.Y += player.Speed * Math.Sin(player.Angle);
-            player.X += player.Speed * Math.Cos(player.Angle);
+            _player.Y += _player.Speed * Math.Sin(_player.Angle);
+            _player.X += _player.Speed * Math.Cos(_player.Angle);
             
             // Make sure that the player does not go out of bounds
-            if (player.X > GraphicsDevice.Viewport.Width + player.Width)
+            if (_player.X > GraphicsDevice.Viewport.Width + _player.Width)
             {
-                player.X = -player.Width + 1;
+                _player.X = -_player.Width + 1;
             } 
-            else if (player.X < -player.Width)
+            else if (_player.X < -_player.Width)
             {
-                player.X = GraphicsDevice.Viewport.Width + player.Width;
+                _player.X = GraphicsDevice.Viewport.Width + _player.Width;
             }
-            if (player.Y > GraphicsDevice.Viewport.Height + player.Height)
+            if (_player.Y > GraphicsDevice.Viewport.Height + _player.Height)
             {
-                player.Y = -player.Height + 1;
+                _player.Y = -_player.Height + 1;
             }
-            else if (player.Y < -player.Height)
+            else if (_player.Y < -_player.Height)
             {
-                player.Y = GraphicsDevice.Viewport.Height + player.Height;
+                _player.Y = GraphicsDevice.Viewport.Height + _player.Height;
             }
         }
 
         private void UpdateProjectiles()
         {
             // Update the Projectiles
-            for (int i = projectiles.Count - 1; i >= 0; i--)
+            for (var i = _projectiles.Count - 1; i >= 0; i--)
             {
-                projectiles[i].Update();
+                _projectiles[i].Update();
 
-                if (projectiles[i].Active == false)
+                if (_projectiles[i].Active == false)
                 {
-                    projectiles.RemoveAt(i);
+                    _projectiles.RemoveAt(i);
+                }
+            }
+        }
+
+        private void UpdateAsteroids()
+        {
+            // Update the Asteroids
+            for (var i = _asteroids.Count - 1; i >= 0; i--)
+            {
+                _asteroids[i].Update();
+
+                if (_asteroids[i].Active == false)
+                {
+                    var parent = _asteroids[i];
+                    if (parent.Scale > 1.0/4.0)
+                    {
+                        var asteroid = new Asteroid();
+                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians - rand.Next(5, 25) * Math.PI / 180, parent.Speed, parent.Scale/2);
+                        _asteroids.Add(asteroid);
+
+                        asteroid = new Asteroid();
+                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians + rand.Next(5, 25) * Math.PI/180, parent.Speed, parent.Scale/2);
+                        _asteroids.Add(asteroid);
+                    }
+                    _asteroids.RemoveAt(i);
+                    
                 }
             }
         }
@@ -184,27 +240,32 @@ namespace Asteroids
         {
             GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Begin();
-            player.Draw(spriteBatch);
+            _spriteBatch.Begin();
+            _player.Draw(_spriteBatch);
 
-            foreach (var t in projectiles)
+            foreach (var t in _projectiles)
             {
-                t.Draw(spriteBatch);
+                t.Draw(_spriteBatch);
             }
 
-            spriteBatch.End();
+            foreach (var asteroid in _asteroids)
+            {
+                asteroid.Draw(_spriteBatch);
+            }
+
+            _spriteBatch.End();
             base.Draw(gameTime);
         }
 
-        private void AddProjectile(Vector2 position)
+        private void AddProjectile()
         {
             var projectile = new Projectile();
             var pos = new Vector2();
-            var angle = player.Angle;
-            pos.X = player.Position.X + (int)(playerTexture.Width / 2.0 * Math.Cos(angle));
-            pos.Y = player.Position.Y + (int)(playerTexture.Height / 2.0 * Math.Sin(angle));
-            projectile.Initialize(GraphicsDevice.Viewport, projectileTexture, pos, angle, projectileMoveSpeed);
-            projectiles.Add(projectile);
+            var angle = _player.Angle;
+            pos.X = _player.Position.X + (int)(_playerTexture.Width / 2.0 * Math.Cos(angle));
+            pos.Y = _player.Position.Y + (int)(_playerTexture.Height / 2.0 * Math.Sin(angle));
+            projectile.Initialize(GraphicsDevice.Viewport, _projectileTexture, pos, angle, ProjectileMoveSpeed);
+            _projectiles.Add(projectile);
         }
     }
 }

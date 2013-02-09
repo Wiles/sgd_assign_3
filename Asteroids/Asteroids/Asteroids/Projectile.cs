@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 
-namespace Shooter
+namespace Asteroids
 {
     class Projectile
     {
@@ -13,8 +13,8 @@ namespace Shooter
         // Position of the Projectile relative to the upper left side of the screen
         public Vector2 Position;
 
-        private double xTravel = 0.0;
-        private double yTravel = 0.0;
+        private double _xTravel;
+        private double _yTravel;
 
         private double _x;
 
@@ -24,9 +24,6 @@ namespace Shooter
 
         // State of the Projectile
         public bool Active;
-
-        // The amount of damage the projectile can inflict to an enemy
-        public int Damage;
 
         // Represents the viewable boundary of the game
         Viewport _viewport;
@@ -45,8 +42,7 @@ namespace Shooter
 
         // Determines how fast the projectile moves
         float _projectileMoveSpeed;
-
-
+        
         public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed)
         {
             _texture = texture;
@@ -54,8 +50,6 @@ namespace Shooter
             _viewport = viewport;
 
             Active = true;
-
-            Damage = 2;
 
             _projectileMoveSpeed = speed;
 
@@ -72,8 +66,8 @@ namespace Shooter
 
             _x += _projectileMoveSpeed  * Math.Cos(_radians);
             _y += _projectileMoveSpeed  * Math.Sin(_radians);
-            xTravel += _projectileMoveSpeed * Math.Cos(_radians);
-            yTravel += _projectileMoveSpeed * Math.Sin(_radians);
+            _xTravel += _projectileMoveSpeed * Math.Cos(_radians);
+            _yTravel += _projectileMoveSpeed * Math.Sin(_radians);
             // Deactivate the bullet if it goes out of screen
             if (_x > _viewport.Width + Width)
                 _x = -Width + 1;
@@ -86,7 +80,7 @@ namespace Shooter
 
             Position.X = (int)_x;
             Position.Y = (int)_y;
-            if ( new Vector2((int)xTravel, (int)yTravel).Length() > _viewport.Width/2.0)
+            if ( new Vector2((int)_xTravel, (int)_yTravel).Length() > _viewport.Width/2.0)
             {
                 Active = false;
             }
@@ -96,6 +90,12 @@ namespace Shooter
         {
             spriteBatch.Draw(_texture, Position, null, Color.White, 0f,
             new Vector2((int)(Width / 2.0), (int)(Height / 2.0)), 1f, SpriteEffects.None, 0f);
+        }
+
+        public Circle GetCircle()
+        {
+            var radius = _texture.Width/2.0;
+            return new Circle((int) (_x + radius), (int) (_y + radius), radius);
         }
     }
 }
