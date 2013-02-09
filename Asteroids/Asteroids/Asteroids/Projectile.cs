@@ -94,8 +94,8 @@ namespace Asteroids
 
         public Circle GetCircle()
         {
-            var radius = _texture.Width/2.0;
-            return new Circle((int) (_x + radius), (int) (_y + radius), radius);
+            var radius = Width / 2.0;
+            return new Circle(_x, _y, radius);
         }
     }
 }

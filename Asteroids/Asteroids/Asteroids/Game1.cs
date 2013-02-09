@@ -77,10 +77,10 @@ namespace Asteroids
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
             _player.Initialize(_playerTexture, playerPosition, MaxSpeed);
 
-            foreach (var n in Enumerable.Range(1,1))
+            foreach (var n in Enumerable.Range(1,100))
             {
                 var asteroid = new Asteroid();
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(0, 0), 0, 1.0f, 1);
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(0, 200), 0, 1.0f, 1);
                 _asteroids.Add(asteroid);
             }
 
@@ -114,8 +114,8 @@ namespace Asteroids
 
             _currentKeyboardState = Keyboard.GetState();
             UpdatePlayer(gameTime);
-            UpdateProjectiles();
             UpdateCollisions();
+            UpdateProjectiles();
             UpdateAsteroids();
             base.Update(gameTime);
         }
@@ -138,7 +138,6 @@ namespace Asteroids
                             }
                         }
                     }
-                    
                 }
             }
         }
@@ -234,19 +233,16 @@ namespace Asteroids
                         case (3):
                             score.AddPoints(100);
                             break;
-                        default:
-                            score.AddPoints(0);
-                            break;
                     }
 
                     if (parent.Generation <= 2)
                     {
                         var asteroid = new Asteroid();
-                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians - rand.Next(5, 25) * Math.PI / 180, parent.Speed, parent.Generation + 1);
+                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians - rand.Next(10, 30) * Math.PI / 180, parent.Speed, parent.Generation + 1);
                         _asteroids.Add(asteroid);
 
                         asteroid = new Asteroid();
-                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians + rand.Next(5, 25) * Math.PI / 180, parent.Speed, parent.Generation + 1);
+                        asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position, parent.Radians + rand.Next(10, 30) * Math.PI / 180, parent.Speed, parent.Generation + 1);
                         _asteroids.Add(asteroid);
                     }
                     _asteroids.RemoveAt(i);

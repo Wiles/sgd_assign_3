@@ -80,13 +80,13 @@ namespace Asteroids
             _x += _projectileMoveSpeed * Math.Cos(_radians);
             _y += _projectileMoveSpeed * Math.Sin(_radians);
             // Deactivate the bullet if it goes out of screen
-            if (_x > _viewport.Width + Width)
-                _x = -Width + 1;
-            else if (_x < -Width)
+            if (_x > _viewport.Width + _texture.Width)
+                _x = -_texture.Width + 1;
+            else if (_x < -_texture.Width)
                 _x = _viewport.Width;
-            else if (_y < -Height)
+            else if (_y < -_texture.Height)
                 _y = _viewport.Height;
-            else if (_y > _viewport.Height + Height)
+            else if (_y > _viewport.Height + _texture.Height)
                 _y = -Height + 1;
 
             Position.X = (int)_x;
@@ -101,8 +101,8 @@ namespace Asteroids
 
         public Circle GetCircle()
         {
-            double radius = _texture.Width / 2.0 * Scale;
-            return new Circle((int)(_x + radius), (int)(_y + radius), _texture.Width / 2.0 * Scale);
+            var radius = _texture.Width / 2.0 * Scale;
+            return new Circle(_x, _y, radius);
         }
     }
 }

@@ -2,11 +2,11 @@
 {
     class Circle
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
         public double Radius { get; set; }
 
-        public Circle(int X, int Y, double Radius)
+        public Circle(double X, double Y, double Radius)
         {
             this.X = X;
             this.Y = Y;
