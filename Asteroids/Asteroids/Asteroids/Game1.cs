@@ -26,8 +26,10 @@ namespace Asteroids
         private Texture2D _projectileTexture;
         private Texture2D _playerTexture;
         private Texture2D _asteroidTexture;
+        private SpriteFont _scoreFont;
         private readonly List<Projectile> _projectiles = new List<Projectile>();
         private readonly List<Asteroid> _asteroids = new List<Asteroid>(); 
+        private readonly Score score = new Score();
 
         private readonly Random rand = new Random();
 
@@ -66,6 +68,8 @@ namespace Asteroids
 
             _asteroidTexture = Content.Load<Texture2D>("Asteroid");
 
+            _scoreFont = Content.Load<SpriteFont>("gameFont");
+
             var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
                                              + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
                 ,
@@ -79,6 +83,8 @@ namespace Asteroids
                 asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(0, 0), 0, 1.0f, 1);
                 _asteroids.Add(asteroid);
             }
+
+            score.Initialize(GraphicsDevice.Viewport, _scoreFont, new Vector2(0, 0));
         }
 
         /// <summary>
@@ -216,6 +222,23 @@ namespace Asteroids
                 if (_asteroids[i].Active == false)
                 {
                     var parent = _asteroids[i];
+
+                    switch (parent.Generation)
+                    {
+                        case(1):
+                            score.AddPoints(20);
+                            break;
+                        case(2):
+                            score.AddPoints(50);
+                            break;
+                        case (3):
+                            score.AddPoints(100);
+                            break;
+                        default:
+                            score.AddPoints(0);
+                            break;
+                    }
+
                     if (parent.Generation <= 2)
                     {
                         var asteroid = new Asteroid();
@@ -252,6 +275,8 @@ namespace Asteroids
             {
                 asteroid.Draw(_spriteBatch);
             }
+
+            score.Draw(_spriteBatch);
 
             _spriteBatch.End();
             base.Draw(gameTime);
