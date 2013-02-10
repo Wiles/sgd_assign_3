@@ -11,7 +11,8 @@ namespace Asteroids
         public double X { get; set; }
         public double Y { get; set; }
         public double MaxSpeed { get; set; }
-
+        public int Lives { get; set; }
+        private Viewport _viewport;
         public double Speed
         {
             get { return _speed; }
@@ -49,12 +50,14 @@ namespace Asteroids
 
         public double Angle { get; set; }
 
-        public void Initialize(Texture2D texture, Vector2 position, float MaxSpeed)
+        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, float MaxSpeed, int lives)
         {
             this.MaxSpeed = MaxSpeed;
             X = position.X;
             Y = position.Y;
             _texture = texture;
+            Lives = lives;
+            _viewport = viewport;
         }
 
         public void Update()
@@ -66,6 +69,13 @@ namespace Asteroids
             spriteBatch.Draw(_texture, Position, null, Color.White, (float) (Angle + Math.PI/2),
                              new Vector2((int) (_texture.Width/2.0), (int) (_texture.Height/2.0)), 1f,
                              SpriteEffects.None, 0f);
+            for (int i = 0; i < Lives; i++)
+            {
+                spriteBatch.Draw(_texture, new Vector2(_viewport.Width - _texture.Width * (i + 2), 0), null, Color.White, 0,
+                                 new Vector2(0, 0), 1f,
+                                 SpriteEffects.None, 0f);
+                
+            }
         }
     }
 }

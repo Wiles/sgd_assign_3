@@ -60,7 +60,7 @@ namespace Asteroids
                                              ,
                                              GraphicsDevice.Viewport.TitleSafeArea.Y
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
-            _player.Initialize(_playerTexture, playerPosition, MaxSpeed);
+            _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
 
             foreach (int n in Enumerable.Range(1, 100))
             {
