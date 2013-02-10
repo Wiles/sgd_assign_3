@@ -2,47 +2,33 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-
 namespace Asteroids
 {
-    class Projectile
+    internal class Projectile
     {
-        // Image representing the Projectile
-        private Texture2D _texture;
-
-        // Position of the Projectile relative to the upper left side of the screen
+        public bool Active;
         public Vector2 Position;
-
-        private double _xTravel;
-        private double _yTravel;
-
-        private double _x;
-
-        private double _y;
+        private float _projectileMoveSpeed;
 
         private double _radians;
+        private Texture2D _texture;
 
-        // State of the Projectile
-        public bool Active;
+        private Viewport _viewport;
+        private double _x;
+        private double _xTravel;
+        private double _y;
+        private double _yTravel;
 
-        // Represents the viewable boundary of the game
-        Viewport _viewport;
-
-        // Get the width of the projectile ship
         public int Width
         {
             get { return _texture.Width; }
         }
 
-        // Get the height of the projectile ship
         public int Height
         {
             get { return _texture.Height; }
         }
 
-        // Determines how fast the projectile moves
-        float _projectileMoveSpeed;
-        
         public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed)
         {
             _texture = texture;
@@ -61,14 +47,12 @@ namespace Asteroids
 
         public void Update()
         {
-            // Projectiles always move to the right
             Position.X += _projectileMoveSpeed;
 
-            _x += _projectileMoveSpeed  * Math.Cos(_radians);
-            _y += _projectileMoveSpeed  * Math.Sin(_radians);
-            _xTravel += _projectileMoveSpeed * Math.Cos(_radians);
-            _yTravel += _projectileMoveSpeed * Math.Sin(_radians);
-            // Deactivate the bullet if it goes out of screen
+            _x += _projectileMoveSpeed*Math.Cos(_radians);
+            _y += _projectileMoveSpeed*Math.Sin(_radians);
+            _xTravel += _projectileMoveSpeed*Math.Cos(_radians);
+            _yTravel += _projectileMoveSpeed*Math.Sin(_radians);
             if (_x > _viewport.Width + Width)
                 _x = -Width + 1;
             else if (_x < -Width)
@@ -78,9 +62,9 @@ namespace Asteroids
             else if (_y > _viewport.Height + Height)
                 _y = -Height + 1;
 
-            Position.X = (int)_x;
-            Position.Y = (int)_y;
-            if ( new Vector2((int)_xTravel, (int)_yTravel).Length() > _viewport.Width/2.0)
+            Position.X = (int) _x;
+            Position.Y = (int) _y;
+            if (new Vector2((int) _xTravel, (int) _yTravel).Length() > _viewport.Width/2.0)
             {
                 Active = false;
             }
@@ -89,12 +73,12 @@ namespace Asteroids
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, Position, null, Color.White, 0f,
-            new Vector2((int)(Width / 2.0), (int)(Height / 2.0)), 1f, SpriteEffects.None, 0f);
+                             new Vector2((int) (Width/2.0), (int) (Height/2.0)), 1f, SpriteEffects.None, 0f);
         }
 
         public Circle GetCircle()
         {
-            var radius = Width / 2.0;
+            double radius = Width/2.0;
             return new Circle(_x, _y, radius);
         }
     }

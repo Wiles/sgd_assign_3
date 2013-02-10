@@ -1,11 +1,7 @@
 ﻿namespace Asteroids
 {
-    class Circle
+    internal class Circle
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Radius { get; set; }
-
         public Circle(double X, double Y, double Radius)
         {
             this.X = X;
@@ -13,12 +9,16 @@
             this.Radius = Radius;
         }
 
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Radius { get; set; }
+
         public bool Intersects(Circle that)
         {
-            var dx = X - that.X;
-            var dy = Y - that.Y;
-            var radii = Radius + that.Radius;
-            return (dx * dx) + (dy * dy) < radii * radii;
+            double dx = X - that.X;
+            double dy = Y - that.Y;
+            double radii = Radius + that.Radius;
+            return (dx*dx) + (dy*dy) < radii*radii;
         }
     }
 }

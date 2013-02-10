@@ -3,18 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    class Score
+    internal class Score
     {
-        // Image representing the Projectile
+        public Vector2 Position;
         private SpriteFont _font;
 
-        // Position of the Projectile relative to the upper left side of the screen
-        public Vector2 Position;
-
-        // Represents the viewable boundary of the game
-        Viewport _viewport;
-
         private int _points;
+        private Viewport _viewport;
 
         public void Initialize(Viewport viewport, SpriteFont font, Vector2 position)
         {
