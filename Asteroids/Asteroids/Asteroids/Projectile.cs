@@ -79,7 +79,7 @@ namespace Asteroids
         public Circle GetCircle()
         {
             double radius = Width/2.0;
-            return new Circle(_x, _y, radius);
+            return new Circle(_x + radius, _y + radius, radius);
         }
     }
 }

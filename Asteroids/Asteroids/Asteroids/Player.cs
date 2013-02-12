@@ -71,7 +71,7 @@ namespace Asteroids
                              SpriteEffects.None, 0f);
             for (int i = 0; i < Lives; i++)
             {
-                spriteBatch.Draw(_texture, new Vector2(_viewport.Width - _texture.Width * (i + 2), 0), null, Color.White, 0,
+                spriteBatch.Draw(_texture, new Vector2(_viewport.Width - _texture.Width * (i + 2), 10), null, Color.White, 0,
                                  new Vector2(0, 0), 1f,
                                  SpriteEffects.None, 0f);
                 
