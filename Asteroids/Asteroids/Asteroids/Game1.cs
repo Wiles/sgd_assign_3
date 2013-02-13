@@ -67,12 +67,12 @@ namespace Asteroids
                                              ,
                                              GraphicsDevice.Viewport.TitleSafeArea.Y
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
-            _player.Initialize(_playerTexture, playerPosition, MaxSpeed);
+            _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
 
             foreach (int n in Enumerable.Range(1, 100))
             {
                 var asteroid = new Asteroid();
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(0, 200), 0, 1.0f, 1);
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(32, 32), 0, 0.0f, 1);
                 _asteroids.Add(asteroid);
             }
 
@@ -131,11 +131,11 @@ namespace Asteroids
 
             if (_currentKeyboardState.IsKeyDown(Keys.Left))
             {
-                _player.Angle -= 0.1f;
+                _player.Angle -= 0.01f;
             }
             if (_currentKeyboardState.IsKeyDown(Keys.Right))
             {
-                _player.Angle += 0.1f;
+                _player.Angle += 0.01f;
             }
             if (_currentKeyboardState.IsKeyDown(Keys.Up))
             {
