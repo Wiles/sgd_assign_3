@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -29,6 +30,9 @@ namespace Asteroids
         private SpriteFont _scoreFont;
         private SpriteBatch _spriteBatch;
 
+        private SoundEffect _shootSound;
+        private SoundEffect _explosionSound;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -46,7 +50,6 @@ namespace Asteroids
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-
             _projectileTexture = Content.Load<Texture2D>("Projectile");
 
             _playerTexture = Content.Load<Texture2D>("Player");
@@ -54,6 +57,10 @@ namespace Asteroids
             _asteroidTexture = Content.Load<Texture2D>("Asteroid");
 
             _scoreFont = Content.Load<SpriteFont>("gameFont");
+
+            _shootSound = Content.Load<SoundEffect>("Shoot");
+
+            _explosionSound = Content.Load<SoundEffect>("Explosion");
 
             var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
                                              + GraphicsDevice.Viewport.TitleSafeArea.Width/2
@@ -109,6 +116,7 @@ namespace Asteroids
                             {
                                 asteroid.Active = false;
                                 projectile.Active = false;
+                                _explosionSound.Play();
                                 break;
                             }
                         }
@@ -142,7 +150,7 @@ namespace Asteroids
                 if (gameTime.TotalGameTime - _previousFireTime > _fireTime)
                 {
                     _previousFireTime = gameTime.TotalGameTime;
-
+                    _shootSound.Play();
                     AddProjectile();
                 }
             }
