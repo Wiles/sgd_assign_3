@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    internal class Player
+    internal class Player : IEntity
     {
         private double _speed;
         private Texture2D _texture;
@@ -60,8 +60,14 @@ namespace Asteroids
             _viewport = viewport;
         }
 
-        public void Update()
+        public void Update(long delta)
         {
+            //TODO
+        }
+
+        public Circle GetCircle()
+        {
+            throw new NotImplementedException();
         }
 
         public void Draw(SpriteBatch spriteBatch)

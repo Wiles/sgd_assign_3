@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    internal class Score
+    internal class Score : IEntity
     {
         public Vector2 Position;
         private SpriteFont _font;
@@ -26,6 +27,16 @@ namespace Asteroids
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(_font, "score: " + _points, Position, Color.White);
+        }
+
+        public void Update(long delta)
+        {
+            
+        }
+
+        public Circle GetCircle()
+        {
+            return new Circle(0,0,0);
         }
     }
 }

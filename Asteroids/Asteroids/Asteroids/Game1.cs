@@ -23,8 +23,6 @@ namespace Asteroids
         private GraphicsDeviceManager _graphics;
         private Player _player;
         private Texture2D _playerTexture;
-        private TimeSpan _previousFireTime;
-
 
         private Texture2D _projectileTexture;
         private SpriteFont _scoreFont;
@@ -32,6 +30,8 @@ namespace Asteroids
 
         private SoundEffect _shootSound;
         private SoundEffect _explosionSound;
+
+        private long _lastFire;
 
         public Game1()
         {
@@ -89,16 +89,19 @@ namespace Asteroids
 
         protected override void Update(GameTime gameTime)
         {
+
+            long delta = gameTime.ElapsedGameTime.Milliseconds;
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
                 Exit();
             }
 
             _currentKeyboardState = Keyboard.GetState();
-            UpdatePlayer(gameTime);
+            UpdatePlayer(delta);
             UpdateCollisions();
-            UpdateProjectiles();
-            UpdateAsteroids();
+            UpdateProjectiles(delta);
+            UpdateAsteroids(delta);
             base.Update(gameTime);
         }
 
@@ -125,9 +128,9 @@ namespace Asteroids
             }
         }
 
-        private void UpdatePlayer(GameTime gameTime)
+        private void UpdatePlayer(long delta)
         {
-            _player.Update();
+            _player.Update(delta);
 
             if (_currentKeyboardState.IsKeyDown(Keys.Left))
             {
@@ -145,11 +148,14 @@ namespace Asteroids
             {
                 _player.Speed -= .025;
             }
+
+            _lastFire += delta;
+
             if (_currentKeyboardState.IsKeyDown(Keys.Space))
             {
-                if (gameTime.TotalGameTime - _previousFireTime > _fireTime)
+                if (_lastFire > _fireTime.Milliseconds)
                 {
-                    _previousFireTime = gameTime.TotalGameTime;
+                    _lastFire = 0;
                     _shootSound.Play();
                     AddProjectile();
                 }
@@ -175,11 +181,11 @@ namespace Asteroids
             }
         }
 
-        private void UpdateProjectiles()
+        private void UpdateProjectiles(long delta)
         {
             for (int i = _projectiles.Count - 1; i >= 0; i--)
             {
-                _projectiles[i].Update();
+                _projectiles[i].Update(delta);
 
                 if (_projectiles[i].Active == false)
                 {
@@ -188,11 +194,11 @@ namespace Asteroids
             }
         }
 
-        private void UpdateAsteroids()
+        private void UpdateAsteroids(long delta)
         {
             for (int i = _asteroids.Count - 1; i >= 0; i--)
             {
-                _asteroids[i].Update();
+                _asteroids[i].Update(delta);
 
                 if (_asteroids[i].Active == false)
                 {

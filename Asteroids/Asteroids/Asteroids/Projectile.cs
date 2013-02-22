@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    internal class Projectile
+    internal class Projectile : IEntity
     {
         public bool Active;
         public Vector2 Position;
@@ -45,7 +45,7 @@ namespace Asteroids
             _radians = radians;
         }
 
-        public void Update()
+        public void Update( long delta)
         {
             Position.X += _projectileMoveSpeed;
 
