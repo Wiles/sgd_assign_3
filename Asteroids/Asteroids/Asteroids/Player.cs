@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
@@ -11,8 +12,11 @@ namespace Asteroids
         public double X { get; set; }
         public double Y { get; set; }
         public double MaxSpeed { get; set; }
+        public double radPerSecond { get; set; }
+        public double accelerationPerSecond { get; set; }
         public int Lives { get; set; }
         private Viewport _viewport;
+
         public double Speed
         {
             get { return _speed; }
@@ -24,7 +28,7 @@ namespace Asteroids
                 }
                 else if (value > MaxSpeed)
                 {
-                    _speed = 5;
+                    _speed = MaxSpeed;
                 }
                 else
                 {
@@ -53,6 +57,8 @@ namespace Asteroids
         public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, float MaxSpeed, int lives)
         {
             this.MaxSpeed = MaxSpeed;
+            radPerSecond = Math.PI * 2;
+            accelerationPerSecond = 100;
             X = position.X;
             Y = position.Y;
             _texture = texture;
@@ -60,9 +66,46 @@ namespace Asteroids
             _viewport = viewport;
         }
 
-        public void Update(long delta)
+        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
         {
-            //TODO
+            double percent = delta / 1000.0;
+            if (input.IsKeyDown(Keys.Left))
+            {
+                Angle -= radPerSecond * percent;
+            }
+            if (input.IsKeyDown(Keys.Right))
+            {
+                Angle += radPerSecond * percent;
+            }
+            if (input.IsKeyDown(Keys.Up))
+            {
+                Speed += accelerationPerSecond * percent;
+            }
+            else
+            {
+                Speed -= accelerationPerSecond * percent;
+            }
+
+
+            Y += Speed * percent * Math.Sin(Angle);
+            X += Speed * percent * Math.Cos(Angle);
+
+            if (X > graphics.Viewport.Width + Width)
+            {
+                X = -Width + 1;
+            }
+            else if (X < -Width)
+            {
+                X = graphics.Viewport.Width + Width;
+            }
+            if (Y > graphics.Viewport.Height + Height)
+            {
+                Y = -Height + 1;
+            }
+            else if (Y < -Height)
+            {
+                Y = graphics.Viewport.Height + Height;
+            }
         }
 
         public Circle GetCircle()

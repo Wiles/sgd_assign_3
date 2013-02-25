@@ -10,7 +10,7 @@ namespace Asteroids
 {
     public class Game1 : Game
     {
-        private const float MaxSpeed = 5.0f;
+        private const float MaxSpeed = 500.0f;
         private const float ProjectileMoveSpeed = MaxSpeed + 1;
         private readonly List<Asteroid> _asteroids = new List<Asteroid>();
         private readonly List<Projectile> _projectiles = new List<Projectile>();
@@ -98,9 +98,31 @@ namespace Asteroids
             }
 
             _currentKeyboardState = Keyboard.GetState();
-            UpdatePlayer(delta);
+
+            _player.Update(GraphicsDevice, _currentKeyboardState, delta);
+
+
+            _lastFire += delta;
+            if (_currentKeyboardState.IsKeyDown(Keys.Space))
+            {
+                if (_lastFire > _fireTime.Milliseconds)
+                {
+                    _lastFire = 0;
+                    _shootSound.Play();
+                    AddProjectile();
+                }
+            }
+
             UpdateCollisions();
-            UpdateProjectiles(delta);
+            for (int i = _projectiles.Count - 1; i >= 0; i--)
+            {
+                _projectiles[i].Update(GraphicsDevice, _currentKeyboardState, delta);
+
+                if (_projectiles[i].Active == false)
+                {
+                    _projectiles.RemoveAt(i);
+                }
+            }
             UpdateAsteroids(delta);
             base.Update(gameTime);
         }
@@ -128,77 +150,11 @@ namespace Asteroids
             }
         }
 
-        private void UpdatePlayer(long delta)
-        {
-            _player.Update(delta);
-
-            if (_currentKeyboardState.IsKeyDown(Keys.Left))
-            {
-                _player.Angle -= 0.01f;
-            }
-            if (_currentKeyboardState.IsKeyDown(Keys.Right))
-            {
-                _player.Angle += 0.01f;
-            }
-            if (_currentKeyboardState.IsKeyDown(Keys.Up))
-            {
-                _player.Speed += .025;
-            }
-            else
-            {
-                _player.Speed -= .025;
-            }
-
-            _lastFire += delta;
-
-            if (_currentKeyboardState.IsKeyDown(Keys.Space))
-            {
-                if (_lastFire > _fireTime.Milliseconds)
-                {
-                    _lastFire = 0;
-                    _shootSound.Play();
-                    AddProjectile();
-                }
-            }
-            _player.Y += _player.Speed*Math.Sin(_player.Angle);
-            _player.X += _player.Speed*Math.Cos(_player.Angle);
-
-            if (_player.X > GraphicsDevice.Viewport.Width + _player.Width)
-            {
-                _player.X = -_player.Width + 1;
-            }
-            else if (_player.X < -_player.Width)
-            {
-                _player.X = GraphicsDevice.Viewport.Width + _player.Width;
-            }
-            if (_player.Y > GraphicsDevice.Viewport.Height + _player.Height)
-            {
-                _player.Y = -_player.Height + 1;
-            }
-            else if (_player.Y < -_player.Height)
-            {
-                _player.Y = GraphicsDevice.Viewport.Height + _player.Height;
-            }
-        }
-
-        private void UpdateProjectiles(long delta)
-        {
-            for (int i = _projectiles.Count - 1; i >= 0; i--)
-            {
-                _projectiles[i].Update(delta);
-
-                if (_projectiles[i].Active == false)
-                {
-                    _projectiles.RemoveAt(i);
-                }
-            }
-        }
-
         private void UpdateAsteroids(long delta)
         {
             for (int i = _asteroids.Count - 1; i >= 0; i--)
             {
-                _asteroids[i].Update(delta);
+                _asteroids[i].Update(GraphicsDevice, _currentKeyboardState, delta);
 
                 if (_asteroids[i].Active == false)
                 {

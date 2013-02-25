@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
@@ -29,7 +30,7 @@ namespace Asteroids
             spriteBatch.DrawString(_font, "score: " + _points, Position, Color.White);
         }
 
-        public void Update(long delta)
+        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
         {
             
         }

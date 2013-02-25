@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
@@ -45,14 +46,15 @@ namespace Asteroids
             _radians = radians;
         }
 
-        public void Update( long delta)
+        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
         {
-            Position.X += _projectileMoveSpeed;
+            double percent = delta / 1000.0;
+            Position.X += (float)(_projectileMoveSpeed * percent);
 
-            _x += _projectileMoveSpeed*Math.Cos(_radians);
-            _y += _projectileMoveSpeed*Math.Sin(_radians);
-            _xTravel += _projectileMoveSpeed*Math.Cos(_radians);
-            _yTravel += _projectileMoveSpeed*Math.Sin(_radians);
+            _x += _projectileMoveSpeed * percent * Math.Cos(_radians);
+            _y += _projectileMoveSpeed * percent * Math.Sin(_radians);
+            _xTravel += _projectileMoveSpeed * percent * Math.Cos(_radians);
+            _yTravel += _projectileMoveSpeed * percent * Math.Sin(_radians);
             if (_x > _viewport.Width + Width)
                 _x = -Width + 1;
             else if (_x < -Width)

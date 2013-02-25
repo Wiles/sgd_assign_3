@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
@@ -64,7 +65,7 @@ namespace Asteroids
             Generation = generation;
         }
 
-        public void Update(long delta)
+        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
         {
             Position.X += _projectileMoveSpeed;
 
