@@ -110,7 +110,7 @@ namespace Asteroids
 
         public Circle GetCircle()
         {
-            throw new NotImplementedException();
+            return new Circle(X, Y, Width/2);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -125,6 +125,15 @@ namespace Asteroids
                                  SpriteEffects.None, 0f);
                 
             }
+            foreach (var circle in GetCircles())
+            {
+                circle.Draw(spriteBatch);
+            }
+        }
+
+        public Circle[] GetCircles()
+        {
+            return new Circle[] { GetCircle() };
         }
     }
 }

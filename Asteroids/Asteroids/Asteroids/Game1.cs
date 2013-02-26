@@ -56,6 +56,8 @@ namespace Asteroids
 
             _asteroidTexture = Content.Load<Texture2D>("Asteroid");
 
+            Circle.Texture = Content.Load<Texture2D>("Collision");
+
             _scoreFont = Content.Load<SpriteFont>("gameFont");
 
             _shootSound = Content.Load<SoundEffect>("Shoot");
@@ -69,7 +71,7 @@ namespace Asteroids
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
             _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
 
-            foreach (int n in Enumerable.Range(1, 100))
+            foreach (int n in Enumerable.Range(1, 1))
             {
                 var asteroid = new Asteroid();
                 asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(32, 32), 0, 0.0f, 1);

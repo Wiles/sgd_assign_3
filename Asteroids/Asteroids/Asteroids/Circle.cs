@@ -1,7 +1,18 @@
-﻿namespace Asteroids
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace Asteroids
 {
     internal class Circle
     {
+        public static Texture2D Texture
+        {
+            get;
+            set;
+        }
+
         public Circle(double X, double Y, double Radius)
         {
             this.X = X;
@@ -19,6 +30,24 @@
             double dy = Y - that.Y;
             double radii = Radius + that.Radius;
             return (dx*dx) + (dy*dy) < radii*radii;
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            if (Texture != null)
+            {
+            spriteBatch.Draw(
+                Texture, 
+                new Vector2((float)X, (float)Y), 
+                null, 
+                Color.White, 
+                0f,
+                new Vector2(Texture.Width/2f, Texture.Width/2f), 
+                (float)(Radius * 2f) / Texture.Width, 
+                SpriteEffects.None, 
+                0f
+                );
+            }
         }
     }
 }

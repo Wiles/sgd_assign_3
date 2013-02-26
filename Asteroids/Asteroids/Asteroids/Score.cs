@@ -28,6 +28,10 @@ namespace Asteroids
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(_font, "score: " + _points, Position, Color.White);
+            foreach (var circle in GetCircles())
+            {
+                circle.Draw(spriteBatch);
+            }
         }
 
         public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
@@ -38,6 +42,11 @@ namespace Asteroids
         public Circle GetCircle()
         {
             return new Circle(0,0,0);
+        }
+
+        public Circle[] GetCircles()
+        {
+            return new Circle[]{GetCircle()};
         }
     }
 }
