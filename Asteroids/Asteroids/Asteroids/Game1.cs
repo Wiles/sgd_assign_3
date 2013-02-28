@@ -71,10 +71,10 @@ namespace Asteroids
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
             _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
 
-            foreach (int n in Enumerable.Range(1, 1))
+            foreach (int n in Enumerable.Range(1, 100))
             {
                 var asteroid = new Asteroid();
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(32, 32), 0, 0.0f, 1);
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(32, 32), n * (180/Math.PI), 1.0f, 1);
                 _asteroids.Add(asteroid);
             }
 

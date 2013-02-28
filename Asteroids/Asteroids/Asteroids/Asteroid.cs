@@ -87,7 +87,7 @@ namespace Asteroids
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, Position, null, Color.White, 0f,
-                             new Vector2((int)(Width / 2.0), (int)(Height / 2.0)), (float)Scale, SpriteEffects.None, 0f);
+                             new Vector2((int)(_texture.Width / 2.0), (int)(_texture.Width / 2.0)), (float)Scale, SpriteEffects.None, 0f);
             foreach (var circle in GetCircles())
             {
                 circle.Draw(spriteBatch);
