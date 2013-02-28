@@ -41,7 +41,7 @@ namespace Asteroids
 
         public Vector2 Position
         {
-            get { return new Vector2((int) X, (int) Y); }
+            get { return new Vector2((int)X, (int)Y); }
         }
 
         public int Width
@@ -61,6 +61,7 @@ namespace Asteroids
             this.MaxSpeed = MaxSpeed;
             radPerSecond = Math.PI * 2;
             accelerationPerSecond = 100;
+            Angle = MathHelper.ToRadians(-90);
             X = position.X;
             Y = position.Y;
             _texture = texture;
@@ -135,6 +136,7 @@ namespace Asteroids
                                  SpriteEffects.None, 0f);
                 
             }
+            GetCircle().Draw(spriteBatch);
             foreach (var circle in GetCircles())
             {
                 circle.Draw(spriteBatch);
@@ -143,7 +145,16 @@ namespace Asteroids
 
         public Circle[] GetCircles()
         {
-            return new Circle[] { GetCircle() };
+            return new Circle[] { 
+                new Circle(X, Y, Width / 3), 
+                new Circle(X + Width/3 * Math.Cos(Angle), Y + Width/3 * Math.Sin(Angle), Width / 10), 
+                new Circle(X + Width/2.5 * Math.Cos(Angle), Y + Width/2.5 * Math.Sin(Angle), Width / 15), 
+                new Circle(X + Width/3 * Math.Cos(Angle + MathHelper.ToRadians(135)), Y + Width/3 * Math.Sin(Angle + MathHelper.ToRadians(135)), Width / 7), 
+                new Circle(X + Width/2.5 * Math.Cos(Angle + MathHelper.ToRadians(135)), Y + Width/2.5 * Math.Sin(Angle + MathHelper.ToRadians(135)), Width / 6), 
+                new Circle(X + Width/2 * Math.Cos(Angle + MathHelper.ToRadians(135)), Y + Width/2 * Math.Sin(Angle + MathHelper.ToRadians(135)), Width / 9), 
+                new Circle(X + Width/3 * Math.Cos(Angle + MathHelper.ToRadians(-135)), Y + Width/3 * Math.Sin(Angle + MathHelper.ToRadians(-135)), Width / 7), 
+                new Circle(X + Width/2.5 * Math.Cos(Angle + MathHelper.ToRadians(-135)), Y + Width/2.5 * Math.Sin(Angle + MathHelper.ToRadians(-135)), Width / 6), 
+                new Circle(X + Width/2 * Math.Cos(Angle + MathHelper.ToRadians(-135)), Y + Width/2 * Math.Sin(Angle + MathHelper.ToRadians(-135)), Width / 9)};
         }
     }
 }

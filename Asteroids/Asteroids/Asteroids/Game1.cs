@@ -71,12 +71,8 @@ namespace Asteroids
                                              GraphicsDevice.Viewport.TitleSafeArea.Y
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
             _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
-
-            foreach (int n in Enumerable.Range(1, 100))
-            {
-            }
-
-            StartWave(8);
+            
+            StartWave(1);
 
             score.Initialize(GraphicsDevice.Viewport, _scoreFont, new Vector2(0, 0));
         }
@@ -156,6 +152,12 @@ namespace Asteroids
                 if(asteroid.GetCircle().Intersects(_player.GetCircle())
                     && Circle.Intersects(asteroid.GetCircles(), _player.GetCircles())){
                         _player.Lives -= 1;
+                    _player.X = GraphicsDevice.Viewport.TitleSafeArea.X
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Width / 2;
+                    _player.Y = GraphicsDevice.Viewport.TitleSafeArea.Y
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Height / 2;
+                    _player.Angle = MathHelper.ToRadians(-90);
+                    _player.Speed = 0;
                 }
             }
         }
@@ -198,6 +200,10 @@ namespace Asteroids
                         _asteroids.Add(asteroid);
                     }
                     _asteroids.RemoveAt(i);
+                    if(_asteroids.Count == 0){
+                        //TODO increase count with each wave
+                        StartWave(8);
+                    }
                 }
             }
         }
