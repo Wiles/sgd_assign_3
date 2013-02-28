@@ -74,10 +74,9 @@ namespace Asteroids
 
             foreach (int n in Enumerable.Range(1, 100))
             {
-                var asteroid = new Asteroid();
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2(32, 32), n * (180/Math.PI), 1.0f, 1);
-                _asteroids.Add(asteroid);
             }
+
+            StartWave(8);
 
             score.Initialize(GraphicsDevice.Viewport, _scoreFont, new Vector2(0, 0));
         }
@@ -235,6 +234,24 @@ namespace Asteroids
             pos.Y = _player.Position.Y + (int) (_playerTexture.Height/2.0*Math.Sin(angle));
             projectile.Initialize(GraphicsDevice.Viewport, _projectileTexture, pos, angle, ProjectileMoveSpeed);
             _projectiles.Add(projectile);
+        }
+
+        private void StartWave(int asteroids)
+        {
+            for (int i = 0; i < asteroids; ++i)
+            {
+                var direction = rand.NextDouble() * Math.PI * 2;
+                var x = GraphicsDevice.Viewport.Width/2 + GraphicsDevice.Viewport.Width * Math.Cos(direction);
+                
+                var y = GraphicsDevice.Viewport.Height/2 + GraphicsDevice.Viewport.Height * Math.Sin(direction);
+                x = MathHelper.Clamp((float)x, (float)0, (float)GraphicsDevice.Viewport.Width);
+                y = MathHelper.Clamp((float)y, (float)0, (float)GraphicsDevice.Viewport.Height);
+                var init = rand.NextDouble() * Math.PI * 2;
+                var asteroid = new Asteroid();
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, 1.0f, 1);
+                _asteroids.Add(asteroid);
+
+            }
         }
     }
 }
