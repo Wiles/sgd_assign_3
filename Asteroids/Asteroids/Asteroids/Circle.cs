@@ -26,6 +26,9 @@ namespace Asteroids
 
         public bool Intersects(Circle that)
         {
+            if(that.Radius <= 0.0 || this.Radius <= 0.0){
+                return false;
+            }
             double dx = X - that.X;
             double dy = Y - that.Y;
             double radii = Radius + that.Radius;
@@ -48,6 +51,21 @@ namespace Asteroids
                 0f
                 );
             }
+        }
+
+        public static Boolean Intersects(Circle[] one, Circle[] two)
+        {
+            foreach (var c in one)
+            {
+                foreach (var d in two)
+                {
+                    if (c.Intersects(d))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

@@ -56,6 +56,7 @@ namespace Asteroids
 
             _asteroidTexture = Content.Load<Texture2D>("Asteroid");
 
+            //Don't set this if you don't want to draw the hitboxes
             Circle.Texture = Content.Load<Texture2D>("Collision");
 
             _scoreFont = Content.Load<SpriteFont>("gameFont");
@@ -148,6 +149,14 @@ namespace Asteroids
                             }
                         }
                     }
+                }
+            }
+
+            foreach (Asteroid asteroid in _asteroids)
+            {
+                if(asteroid.GetCircle().Intersects(_player.GetCircle())
+                    && Circle.Intersects(asteroid.GetCircles(), _player.GetCircles())){
+                        _player.Lives -= 1;
                 }
             }
         }

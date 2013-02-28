@@ -14,8 +14,10 @@ namespace Asteroids
         public double MaxSpeed { get; set; }
         public double radPerSecond { get; set; }
         public double accelerationPerSecond { get; set; }
-        public int Lives { get; set; }
+        private int _lives;
+        public int Lives { get { return _lives; } set { _lives = value; LastDeath = 0; } }
         private Viewport _viewport;
+        public long LastDeath { get; set; }
 
         public double Speed
         {
@@ -68,6 +70,7 @@ namespace Asteroids
 
         public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
         {
+            LastDeath += delta;
             double percent = delta / 1000.0;
             if (input.IsKeyDown(Keys.Left))
             {
@@ -110,14 +113,21 @@ namespace Asteroids
 
         public Circle GetCircle()
         {
+            if(LastDeath <= 1000){
+                return new Circle(0,0,0);
+            }
             return new Circle(X, Y, Width/2);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, Position, null, Color.White, (float) (Angle + Math.PI/2),
-                             new Vector2((int) (_texture.Width/2.0), (int) (_texture.Height/2.0)), 1f,
-                             SpriteEffects.None, 0f);
+            if (LastDeath > 1000 || LastDeath / 100 % 2 == 0)
+            {
+                spriteBatch.Draw(_texture, Position, null, Color.White, (float)(Angle + Math.PI / 2),
+                                 new Vector2((int)(_texture.Width / 2.0), (int)(_texture.Height / 2.0)), 1f,
+                                 SpriteEffects.None, 0f);
+            
+            }
             for (int i = 0; i < Lives; i++)
             {
                 spriteBatch.Draw(_texture, new Vector2(_viewport.Width - _texture.Width * (i + 2), 10), null, Color.White, 0,
