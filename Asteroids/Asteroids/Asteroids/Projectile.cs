@@ -38,7 +38,7 @@ namespace Asteroids
 
             Active = true;
 
-            _projectileMoveSpeed = speed;
+            _projectileMoveSpeed = 1;
 
             _x = position.X;
             _y = position.Y;
@@ -85,7 +85,7 @@ namespace Asteroids
         public Circle GetCircle()
         {
             double radius = Width/2.0;
-            return new Circle(_x + radius, _y + radius, radius);
+            return new Circle(_x, _y, radius);
         }
         
         public Circle[] GetCircles()

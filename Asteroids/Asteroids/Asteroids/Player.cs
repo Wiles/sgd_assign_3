@@ -117,7 +117,9 @@ namespace Asteroids
             if(LastDeath <= 1000){
                 return new Circle(0,0,0);
             }
-            return new Circle(X, Y, Width/2);
+            return new Circle(X,
+                Y, 
+                (Width / 2) * 1.25);
         }
 
         public void Draw(SpriteBatch spriteBatch)
