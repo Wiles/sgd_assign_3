@@ -23,6 +23,7 @@ namespace Asteroids
         private GraphicsDeviceManager _graphics;
         private Player _player;
         private Texture2D _playerTexture;
+        private Satellite _satellite;
 
         private Texture2D _projectileTexture;
         private SpriteFont _scoreFont;
@@ -30,6 +31,8 @@ namespace Asteroids
 
         private SoundEffect _shootSound;
         private SoundEffect _explosionSound;
+
+        private Texture2D _ufoTexture;
 
         private long _lastFire;
 
@@ -42,6 +45,7 @@ namespace Asteroids
         protected override void Initialize()
         {
             _player = new Player();
+            _satellite = new Satellite();
             _fireTime = TimeSpan.FromSeconds(.25f);
             base.Initialize();
         }
@@ -62,6 +66,9 @@ namespace Asteroids
             _scoreFont = Content.Load<SpriteFont>("gameFont");
 
             _shootSound = Content.Load<SoundEffect>("Shoot");
+
+            _ufoTexture = Content.Load<Texture2D>("UFO");
+            _satellite.Initialize(_ufoTexture, new Vector2(50, 50));
 
             _explosionSound = Content.Load<SoundEffect>("Explosion");
 
@@ -98,9 +105,9 @@ namespace Asteroids
             _currentKeyboardState = Keyboard.GetState();
 
             _player.Update(GraphicsDevice, _currentKeyboardState, delta);
-
-
+            
             _lastFire += delta;
+            
             if (_currentKeyboardState.IsKeyDown(Keys.Space))
             {
                 if (_lastFire > _fireTime.Milliseconds)
@@ -212,7 +219,9 @@ namespace Asteroids
         {
             GraphicsDevice.Clear(Color.Black);
 
+
             _spriteBatch.Begin();
+            _satellite.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
 
             foreach (Projectile t in _projectiles)
@@ -256,7 +265,6 @@ namespace Asteroids
                 var asteroid = new Asteroid();
                 asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, 1.0f, 1);
                 _asteroids.Add(asteroid);
-
             }
         }
     }

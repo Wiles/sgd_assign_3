@@ -138,7 +138,7 @@ namespace Asteroids
                                  SpriteEffects.None, 0f);
                 
             }
-            GetCircle().Draw(spriteBatch);
+
             foreach (var circle in GetCircles())
             {
                 circle.Draw(spriteBatch);

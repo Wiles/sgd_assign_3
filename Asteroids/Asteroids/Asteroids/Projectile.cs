@@ -38,7 +38,7 @@ namespace Asteroids
 
             Active = true;
 
-            _projectileMoveSpeed = 1;
+            _projectileMoveSpeed = speed;
 
             _x = position.X;
             _y = position.Y;
