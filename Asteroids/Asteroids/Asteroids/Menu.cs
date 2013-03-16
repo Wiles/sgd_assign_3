@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -14,6 +15,10 @@ namespace Asteroids
         private Viewport _viewport;
         private SpriteFont _font;
         private Game1 _game;
+
+        private SoundEffect _menuMove;
+        private SoundEffect _menuSelect;
+
         public int selectedMenuScreen { get; set; }
 
         public int MainMenuIndex { get; set; }
@@ -27,11 +32,13 @@ namespace Asteroids
         private long updateDelay = 100;
         private long lastUpdate;
 
-        public void Initialize(Game1 game, Viewport viewport, SpriteFont font)
+        public void Initialize(Game1 game, Viewport viewport, SpriteFont font, SoundEffect move, SoundEffect select)
         {
             _viewport = viewport;
             _font = font;
             _game = game;
+            _menuMove = move;
+            _menuSelect = select;
         }
 
         public Circle GetCircle()
@@ -78,6 +85,7 @@ namespace Asteroids
                 var screen = screens[selectedMenuScreen];
                 if (input.IsKeyDown(Keys.Down))
                 {
+                    _menuMove.Play();
                     screen.selectedIndex += 1;
                     if (screen.selectedIndex >= screen.elements.Count)
                     {
@@ -86,6 +94,7 @@ namespace Asteroids
                 }
                 if (input.IsKeyDown(Keys.Up))
                 {
+                    _menuMove.Play();
                     screen.selectedIndex -= 1;
                     if (screen.selectedIndex < 0)
                     {
@@ -97,6 +106,7 @@ namespace Asteroids
                     var action = screen.elements.Values.ToArray()[screen.selectedIndex];
                     if(action != null)
                     {
+                        _menuSelect.Play();
                         action();
                     }
                 }
