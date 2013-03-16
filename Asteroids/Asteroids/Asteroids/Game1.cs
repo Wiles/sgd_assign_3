@@ -13,6 +13,7 @@ namespace Asteroids
         private bool running;
         private bool hard;
         private MenuScreen pause;
+        private MenuScreen _gameOver;
 
         private Menu _menu;
 
@@ -62,9 +63,9 @@ namespace Asteroids
         {
             var diff = new MenuScreen("Difficulty");
             var start = new MenuScreen("Asteroids");
-            var gameOver = new MenuScreen("Game Over");
             var about = new MenuScreen("About");
             pause = new MenuScreen("Paused");
+            _gameOver = new MenuScreen("Game Over");
 
             var e = new Dictionary<string, Action>
                 {
@@ -114,7 +115,7 @@ namespace Asteroids
                     {"Quit", Exit}
                 };
 
-            gameOver.elements = e;
+            _gameOver.elements = e;
 
             e = new Dictionary<string, Action>
                 {
@@ -127,7 +128,7 @@ namespace Asteroids
 
             _menu.AddMenuScreen(start);
             _menu.AddMenuScreen(diff);
-            _menu.AddMenuScreen(gameOver);
+            _menu.AddMenuScreen(_gameOver);
             _menu.AddMenuScreen(about);
             _menu.AddMenuScreen(pause);
 
@@ -268,6 +269,12 @@ namespace Asteroids
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height / 2;
                     _player.Angle = MathHelper.ToRadians(-90);
                     _player.Speed = 0;
+                    if(_player.Lives < 0)
+                    {
+                        running = false;
+                        _menu.MainMenuIndex = _menu.Screens.IndexOf(_gameOver);
+                        _menu.selectedMenuScreen = _menu.MainMenuIndex;
+                    }
                 }
             }
         }
