@@ -12,6 +12,8 @@ namespace Asteroids
     {
         private bool running;
         private bool hard;
+        private bool debug;
+
         private MenuScreen pause;
         private MenuScreen _gameOver;
 
@@ -24,6 +26,7 @@ namespace Asteroids
         private readonly Random rand = new Random();
         private readonly Score score = new Score();
         private Texture2D _asteroidTexture;
+        private Texture2D _collisionTexture;
 
         private TimeSpan _fireTime;
         private GraphicsDeviceManager _graphics;
@@ -65,6 +68,7 @@ namespace Asteroids
             var diff = new MenuScreen("Difficulty");
             var start = new MenuScreen("Asteroids");
             var about = new MenuScreen("About");
+            var debugger = new MenuScreen("Debug");
             pause = new MenuScreen("Paused");
             _gameOver = new MenuScreen("Game Over");
 
@@ -77,6 +81,18 @@ namespace Asteroids
                 };
             diff.elements = e;
 
+
+            e = new Dictionary<string, Action>
+                {
+                    {"On", () => { debug = true;
+                                     Circle.Texture = _collisionTexture;
+                        _menu.selectedMenuScreen = _menu.MainMenuIndex;}}, 
+                    {"Off", () => { debug = false;
+                                      Circle.Texture = null;
+                         _menu.selectedMenuScreen = _menu.MainMenuIndex;}}
+                };
+            debugger.elements = e;
+
             e = new Dictionary<string, Action>
                 {
                     {"Start Game", newGame},
@@ -88,12 +104,16 @@ namespace Asteroids
                             }
                     },
                     {"About", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(about); }},
+                    {"Debug", () =>
+                        {
+                            debugger.selectedIndex = debug ? 0 : 1;
+                            _menu.selectedMenuScreen = _menu.Screens.IndexOf(debugger);
+                        }},
                     {"Quit", Exit}
                 };
 
             start.elements = e;
-
-
+            
             e = new Dictionary<string, Action>
                 {
                     {"Resume", () => { running = true; }},
@@ -105,6 +125,11 @@ namespace Asteroids
                             }
                     },
                     {"About", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(about); }},
+                    {"Debug", () =>
+                        {
+                            debugger.selectedIndex = debug ? 0 : 1;
+                            _menu.selectedMenuScreen = _menu.Screens.IndexOf(debugger);
+                        }},
                     {"Quit", Exit}
                 };
 
@@ -130,6 +155,7 @@ namespace Asteroids
             _menu.AddMenuScreen(start);
             _menu.AddMenuScreen(diff);
             _menu.AddMenuScreen(_gameOver);
+            _menu.AddMenuScreen(debugger);
             _menu.AddMenuScreen(about);
             _menu.AddMenuScreen(pause);
 
@@ -148,7 +174,7 @@ namespace Asteroids
             _asteroidTexture = Content.Load<Texture2D>("Asteroid");
 
             //Don't set this if you don't want to draw the hitboxes
-            Circle.Texture = Content.Load<Texture2D>("Collision");
+            _collisionTexture = Content.Load<Texture2D>("Collision");
 
             _scoreFont = Content.Load<SpriteFont>("gameFont");
 
