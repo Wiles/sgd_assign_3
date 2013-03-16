@@ -29,8 +29,10 @@ namespace Asteroids
             get { return screens; }
         }
 
-        private long updateDelay = 100;
-        private long lastUpdate;
+        private bool down;
+        private bool up;
+        private bool enter;
+        private bool escape;
 
         public void Initialize(Game1 game, Viewport viewport, SpriteFont font, SoundEffect move, SoundEffect select)
         {
@@ -78,13 +80,12 @@ namespace Asteroids
 
         public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
         {
-            lastUpdate += delta;
-            if (lastUpdate > updateDelay)
+            var screen = screens[selectedMenuScreen];
+            if (input.IsKeyDown(Keys.Down))
             {
-                lastUpdate = 0;
-                var screen = screens[selectedMenuScreen];
-                if (input.IsKeyDown(Keys.Down))
+                if(down == false)
                 {
+                    down = true;
                     _menuMove.Play();
                     screen.selectedIndex += 1;
                     if (screen.selectedIndex >= screen.elements.Count)
@@ -92,8 +93,16 @@ namespace Asteroids
                         screen.selectedIndex = 0;
                     }
                 }
-                if (input.IsKeyDown(Keys.Up))
+            }
+            else
+            {
+                down = false;
+            }
+            if (input.IsKeyDown(Keys.Up))
+            {
+                if (up == false)
                 {
+                    up = true;
                     _menuMove.Play();
                     screen.selectedIndex -= 1;
                     if (screen.selectedIndex < 0)
@@ -101,20 +110,32 @@ namespace Asteroids
                         screen.selectedIndex = screen.elements.Count - 1;
                     }
                 }
-                if(input.IsKeyDown(Keys.Enter))
+            }
+            else
+            {
+                up = false;
+            }
+            if(input.IsKeyDown(Keys.Enter))
+            {
+                if (enter == false)
                 {
+                    enter = true;
                     var action = screen.elements.Values.ToArray()[screen.selectedIndex];
-                    if(action != null)
+                    if (action != null)
                     {
                         _menuSelect.Play();
                         action();
                     }
                 }
+            }
+            else
+            {
+                enter = false;
+            }
 
-                if(input.IsKeyDown(Keys.Escape))
-                {
-                    selectedMenuScreen = MainMenuIndex;
-                }
+            if(input.IsKeyDown(Keys.Escape))
+            {
+                selectedMenuScreen = MainMenuIndex;
             }
         }
 
