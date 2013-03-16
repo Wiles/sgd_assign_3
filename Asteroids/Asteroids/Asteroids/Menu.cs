@@ -15,6 +15,9 @@ namespace Asteroids
         private SpriteFont _font;
         private Game1 _game;
         public int selectedMenuScreen { get; set; }
+
+        public int MainMenuIndex { get; set; }
+
         private List<MenuScreen> screens = new List<MenuScreen>();
         public List<MenuScreen> Screens
         {
@@ -92,7 +95,10 @@ namespace Asteroids
                 if(input.IsKeyDown(Keys.Enter))
                 {
                     var action = screen.elements.Values.ToArray()[screen.selectedIndex];
-                    action();
+                    if(action != null)
+                    {
+                        action();
+                    }
                 }
             }
         }

@@ -61,20 +61,21 @@ namespace Asteroids
         {
             var diff = new MenuScreen("Difficulty");
             var start = new MenuScreen("Asteroids");
+            var gameOver = new MenuScreen("Game Over");
+            var about = new MenuScreen("About");
 
             var e = new Dictionary<string, Action>
                 {
                     {"Hard", () => { hard = true; 
-                        _menu.selectedMenuScreen = _menu.Screens.IndexOf(start);}}, 
+                        _menu.selectedMenuScreen = _menu.MainMenuIndex;}}, 
                     {"Easy", () => { hard = false; 
-                         _menu.selectedMenuScreen = _menu.Screens.IndexOf(start);}}
+                         _menu.selectedMenuScreen = _menu.MainMenuIndex;}}
                 };
             diff.elements = e;
-            _menu.AddMenuScreen(diff);
 
             e = new Dictionary<string, Action>
                 {
-                    {"Start Game", () => { running = true; }},
+                    {"Start Game", newGame},
                     {
                         "Difficulty", () =>
                             {
@@ -82,12 +83,36 @@ namespace Asteroids
                                 _menu.selectedMenuScreen = _menu.Screens.IndexOf(diff);
                             }
                     },
+                    {"About", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(about); }},
                     {"Quit", Exit}
                 };
 
             start.elements = e;
+
+            e = new Dictionary<string, Action>
+                {
+                    {"New game", newGame},
+                    {"Quit", Exit}
+                };
+
+            gameOver.elements = e;
+
+            e = new Dictionary<string, Action>
+                {
+                    {"Samuel Lewis & Thomas Kempton", null},
+                    {"Simulation and Game Development", null},
+                    {"Assignment #3 - SET Asteroids", null}
+                };
+
+            about.elements = e;
+
             _menu.AddMenuScreen(start);
+            _menu.AddMenuScreen(diff);
+            _menu.AddMenuScreen(gameOver);
+            _menu.AddMenuScreen(about);
+
             _menu.selectedMenuScreen = _menu.Screens.IndexOf(start);
+            _menu.MainMenuIndex = _menu.Screens.IndexOf(start);
         }
 
         protected override void LoadContent()
@@ -325,9 +350,9 @@ namespace Asteroids
             }
         }
 
-        public void StartGame()
+        public void newGame()
         {
-            
+            running = true;
         }
     }
 }
