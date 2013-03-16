@@ -12,6 +12,7 @@ namespace Asteroids
     {
         private bool running;
         private bool hard;
+        private MenuScreen pause;
 
         private Menu _menu;
 
@@ -63,6 +64,7 @@ namespace Asteroids
             var start = new MenuScreen("Asteroids");
             var gameOver = new MenuScreen("Game Over");
             var about = new MenuScreen("About");
+            pause = new MenuScreen("Paused");
 
             var e = new Dictionary<string, Action>
                 {
@@ -89,6 +91,23 @@ namespace Asteroids
 
             start.elements = e;
 
+
+            e = new Dictionary<string, Action>
+                {
+                    {"Resume", () => { running = true; }},
+                    {
+                        "Difficulty", () =>
+                            {
+                                diff.selectedIndex = hard ? 0 : 1;
+                                _menu.selectedMenuScreen = _menu.Screens.IndexOf(diff);
+                            }
+                    },
+                    {"About", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(about); }},
+                    {"Quit", Exit}
+                };
+
+            pause.elements = e;
+
             e = new Dictionary<string, Action>
                 {
                     {"New game", newGame},
@@ -110,6 +129,7 @@ namespace Asteroids
             _menu.AddMenuScreen(diff);
             _menu.AddMenuScreen(gameOver);
             _menu.AddMenuScreen(about);
+            _menu.AddMenuScreen(pause);
 
             _menu.selectedMenuScreen = _menu.Screens.IndexOf(start);
             _menu.MainMenuIndex = _menu.Screens.IndexOf(start);
@@ -174,6 +194,13 @@ namespace Asteroids
 
             if (running)
             {
+
+                if (_currentKeyboardState.IsKeyDown(Keys.Escape))
+                {
+                    running = false;
+                    _menu.selectedMenuScreen = _menu.MainMenuIndex;
+                    return;
+                }
 
                 _player.Update(GraphicsDevice, _currentKeyboardState, delta);
 
@@ -353,6 +380,7 @@ namespace Asteroids
         public void newGame()
         {
             running = true;
+            _menu.MainMenuIndex = _menu.Screens.IndexOf(pause);
         }
     }
 }
