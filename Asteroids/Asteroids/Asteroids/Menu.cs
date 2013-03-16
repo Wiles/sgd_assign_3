@@ -100,6 +100,11 @@ namespace Asteroids
                         action();
                     }
                 }
+
+                if(input.IsKeyDown(Keys.Escape))
+                {
+                    selectedMenuScreen = MainMenuIndex;
+                }
             }
         }
 

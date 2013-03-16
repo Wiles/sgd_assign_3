@@ -382,5 +382,10 @@ namespace Asteroids
             running = true;
             _menu.MainMenuIndex = _menu.Screens.IndexOf(pause);
         }
+
+        public void resume()
+        {
+            running = true;
+        }
     }
 }
