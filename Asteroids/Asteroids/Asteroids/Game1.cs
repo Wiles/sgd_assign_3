@@ -24,7 +24,6 @@ namespace Asteroids
         private readonly Random rand = new Random();
         private readonly Score score = new Score();
         private Texture2D _asteroidTexture;
-        private KeyboardState _currentKeyboardState;
 
         private TimeSpan _fireTime;
         private GraphicsDeviceManager _graphics;
@@ -190,29 +189,22 @@ namespace Asteroids
         {
 
             long delta = gameTime.ElapsedGameTime.Milliseconds;
-            _currentKeyboardState = Keyboard.GetState();
-
-
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-            {
-                Exit();
-            }
-
+            var inputState = new Input(Keyboard.GetState(), GamePad.GetState(PlayerIndex.One));
+            
             if (running)
             {
-
-                if (_currentKeyboardState.IsKeyDown(Keys.Escape))
+                if (inputState.Escape())
                 {
                     running = false;
                     _menu.selectedMenuScreen = _menu.MainMenuIndex;
                     return;
                 }
 
-                _player.Update(GraphicsDevice, _currentKeyboardState, delta);
+                _player.Update(GraphicsDevice, inputState, delta);
 
                 _lastFire += delta;
 
-                if (_currentKeyboardState.IsKeyDown(Keys.Space))
+                if (inputState.Fire())
                 {
                     if (_lastFire > _fireTime.Milliseconds)
                     {
@@ -225,19 +217,19 @@ namespace Asteroids
                 UpdateCollisions();
                 for (int i = _projectiles.Count - 1; i >= 0; i--)
                 {
-                    _projectiles[i].Update(GraphicsDevice, _currentKeyboardState, delta);
+                    _projectiles[i].Update(GraphicsDevice, inputState, delta);
 
                     if (_projectiles[i].Active == false)
                     {
                         _projectiles.RemoveAt(i);
                     }
                 }
-                UpdateAsteroids(delta);
+                UpdateAsteroids(delta, inputState);
                 base.Update(gameTime);
             }
             else
             {
-                _menu.Update(GraphicsDevice, _currentKeyboardState, delta);
+                _menu.Update(GraphicsDevice, inputState, delta);
             }
         }
 
@@ -284,11 +276,11 @@ namespace Asteroids
             }
         }
 
-        private void UpdateAsteroids(long delta)
+        private void UpdateAsteroids(long delta, Input inputState)
         {
             for (int i = _asteroids.Count - 1; i >= 0; i--)
             {
-                _asteroids[i].Update(GraphicsDevice, _currentKeyboardState, delta);
+                _asteroids[i].Update(GraphicsDevice, inputState, delta);
 
                 if (_asteroids[i].Active == false)
                 {

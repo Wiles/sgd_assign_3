@@ -46,7 +46,7 @@ namespace Asteroids
             _radians = radians;
         }
 
-        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
+        public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             double percent = delta / 1000.0;
             Position.X += (float)(_projectileMoveSpeed * percent);

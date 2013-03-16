@@ -65,7 +65,7 @@ namespace Asteroids
             Generation = generation;
         }
 
-        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
+        public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             Position.X += _projectileMoveSpeed;
 

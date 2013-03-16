@@ -69,19 +69,19 @@ namespace Asteroids
             _viewport = viewport;
         }
 
-        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
+        public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             LastDeath += delta;
             double percent = delta / 1000.0;
-            if (input.IsKeyDown(Keys.Left))
+            if (input.Left())
             {
                 Angle -= radPerSecond * percent;
             }
-            if (input.IsKeyDown(Keys.Right))
+            if (input.Right())
             {
                 Angle += radPerSecond * percent;
             }
-            if (input.IsKeyDown(Keys.Up))
+            if (input.Up())
             {
                 Speed += accelerationPerSecond * percent;
             }

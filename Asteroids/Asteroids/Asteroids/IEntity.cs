@@ -8,6 +8,6 @@ namespace Asteroids
         Circle GetCircle();
         Circle[] GetCircles();
         void Draw(SpriteBatch spriteBatch);
-        void Update(GraphicsDevice graphics, KeyboardState input, long delta);
+        void Update(GraphicsDevice graphics, Input input, long delta);
     }
 }

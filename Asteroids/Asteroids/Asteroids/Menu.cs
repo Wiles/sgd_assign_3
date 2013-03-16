@@ -78,10 +78,10 @@ namespace Asteroids
             }
         }
 
-        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
+        public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             var screen = screens[selectedMenuScreen];
-            if (input.IsKeyDown(Keys.Down))
+            if (input.Down())
             {
                 if(down == false)
                 {
@@ -98,7 +98,7 @@ namespace Asteroids
             {
                 down = false;
             }
-            if (input.IsKeyDown(Keys.Up))
+            if (input.Up())
             {
                 if (up == false)
                 {
@@ -115,7 +115,7 @@ namespace Asteroids
             {
                 up = false;
             }
-            if(input.IsKeyDown(Keys.Enter))
+            if(input.Select())
             {
                 if (enter == false)
                 {
@@ -133,7 +133,7 @@ namespace Asteroids
                 enter = false;
             }
 
-            if(input.IsKeyDown(Keys.Escape))
+            if(input.Escape())
             {
                 selectedMenuScreen = MainMenuIndex;
             }

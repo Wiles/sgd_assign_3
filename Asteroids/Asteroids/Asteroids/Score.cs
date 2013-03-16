@@ -34,7 +34,7 @@ namespace Asteroids
             }
         }
 
-        public void Update(GraphicsDevice graphics, KeyboardState input, long delta)
+        public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             
         }
