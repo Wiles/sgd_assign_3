@@ -56,7 +56,7 @@ namespace Asteroids
         public void Draw(SpriteBatch spriteBatch)
         {
             var screen = screens[selectedMenuScreen];
-                var textSize = _font.MeasureString("Asteroids");
+                var textSize = _font.MeasureString(screen.Title);
                 spriteBatch.DrawString(_font,
                     screen.Title,
                     new Vector2((_viewport.Width / 2) + 2, textSize.Y + 2),
