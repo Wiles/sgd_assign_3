@@ -75,6 +75,8 @@
     <Compile Include="Asteroid.cs" />
     <Compile Include="Circle.cs" />
     <Compile Include="IEntity.cs" />
+    <Compile Include="Menu.cs" />
+    <Compile Include="MenuScreen.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -10,6 +10,10 @@ namespace Asteroids
 {
     public class Game1 : Game
     {
+        private bool running;
+
+        private Menu _menu;
+
         private const float MaxSpeed = 500.0f;
         private const float ProjectileMoveSpeed = MaxSpeed + 1;
         private readonly List<Asteroid> _asteroids = new List<Asteroid>();
@@ -47,6 +51,8 @@ namespace Asteroids
             _player = new Player();
             _satellite = new Satellite();
             _fireTime = TimeSpan.FromSeconds(.25f);
+            _menu = new Menu();
+
             base.Initialize();
         }
 
@@ -64,6 +70,17 @@ namespace Asteroids
             Circle.Texture = Content.Load<Texture2D>("Collision");
 
             _scoreFont = Content.Load<SpriteFont>("gameFont");
+
+            _menu.Initialize(this, GraphicsDevice.Viewport, _scoreFont);
+
+            MenuScreen s = new MenuScreen("Asteroids");
+            var e = new Dictionary<string, Action>();
+
+            e.Add("Start Game", () => { running = true; });
+            e.Add("Quit", Exit);
+
+            s.elements = e;
+            _menu.AddMenuScreen(s);
 
             _shootSound = Content.Load<SoundEffect>("Shoot");
 
@@ -96,40 +113,48 @@ namespace Asteroids
         {
 
             long delta = gameTime.ElapsedGameTime.Milliseconds;
+            _currentKeyboardState = Keyboard.GetState();
+
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
                 Exit();
             }
 
-            _currentKeyboardState = Keyboard.GetState();
-
-            _player.Update(GraphicsDevice, _currentKeyboardState, delta);
-            
-            _lastFire += delta;
-            
-            if (_currentKeyboardState.IsKeyDown(Keys.Space))
+            if (running)
             {
-                if (_lastFire > _fireTime.Milliseconds)
-                {
-                    _lastFire = 0;
-                    _shootSound.Play();
-                    AddProjectile();
-                }
-            }
 
-            UpdateCollisions();
-            for (int i = _projectiles.Count - 1; i >= 0; i--)
+                _player.Update(GraphicsDevice, _currentKeyboardState, delta);
+
+                _lastFire += delta;
+
+                if (_currentKeyboardState.IsKeyDown(Keys.Space))
+                {
+                    if (_lastFire > _fireTime.Milliseconds)
+                    {
+                        _lastFire = 0;
+                        _shootSound.Play();
+                        AddProjectile();
+                    }
+                }
+
+                UpdateCollisions();
+                for (int i = _projectiles.Count - 1; i >= 0; i--)
+                {
+                    _projectiles[i].Update(GraphicsDevice, _currentKeyboardState, delta);
+
+                    if (_projectiles[i].Active == false)
+                    {
+                        _projectiles.RemoveAt(i);
+                    }
+                }
+                UpdateAsteroids(delta);
+                base.Update(gameTime);
+            }
+            else
             {
-                _projectiles[i].Update(GraphicsDevice, _currentKeyboardState, delta);
-
-                if (_projectiles[i].Active == false)
-                {
-                    _projectiles.RemoveAt(i);
-                }
+                _menu.Update(GraphicsDevice, _currentKeyboardState, delta);
             }
-            UpdateAsteroids(delta);
-            base.Update(gameTime);
         }
 
         private void UpdateCollisions()
@@ -221,21 +246,27 @@ namespace Asteroids
 
 
             _spriteBatch.Begin();
-            _satellite.Draw(_spriteBatch);
-            _player.Draw(_spriteBatch);
-
-            foreach (Projectile t in _projectiles)
+            if (running)
             {
-                t.Draw(_spriteBatch);
-            }
+                _satellite.Draw(_spriteBatch);
+                _player.Draw(_spriteBatch);
 
-            foreach (Asteroid asteroid in _asteroids)
+                foreach (Projectile t in _projectiles)
+                {
+                    t.Draw(_spriteBatch);
+                }
+
+                foreach (Asteroid asteroid in _asteroids)
+                {
+                    asteroid.Draw(_spriteBatch);
+                }
+
+                score.Draw(_spriteBatch);
+            }
+            else
             {
-                asteroid.Draw(_spriteBatch);
+                _menu.Draw(_spriteBatch);
             }
-
-            score.Draw(_spriteBatch);
-
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -266,6 +297,11 @@ namespace Asteroids
                 asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, 1.0f, 1);
                 _asteroids.Add(asteroid);
             }
+        }
+
+        public void StartGame()
+        {
+            
         }
     }
 }
