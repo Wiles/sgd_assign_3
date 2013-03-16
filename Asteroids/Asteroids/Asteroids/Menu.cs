@@ -14,8 +14,12 @@ namespace Asteroids
         private Viewport _viewport;
         private SpriteFont _font;
         private Game1 _game;
-        private int selectedMenuScreen = 0;
-        private List<MenuScreen> screens = new List<MenuScreen>(); 
+        public int selectedMenuScreen { get; set; }
+        private List<MenuScreen> screens = new List<MenuScreen>();
+        public List<MenuScreen> Screens
+        {
+            get { return screens; }
+        }
 
         private long updateDelay = 100;
         private long lastUpdate;

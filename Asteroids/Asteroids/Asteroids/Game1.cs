@@ -11,6 +11,7 @@ namespace Asteroids
     public class Game1 : Game
     {
         private bool running;
+        private bool hard;
 
         private Menu _menu;
 
@@ -56,6 +57,39 @@ namespace Asteroids
             base.Initialize();
         }
 
+        private void InitMenu()
+        {
+            var diff = new MenuScreen("Difficulty");
+            var start = new MenuScreen("Asteroids");
+
+            var e = new Dictionary<string, Action>
+                {
+                    {"Hard", () => { hard = true; 
+                        _menu.selectedMenuScreen = _menu.Screens.IndexOf(start);}}, 
+                    {"Easy", () => { hard = false; 
+                         _menu.selectedMenuScreen = _menu.Screens.IndexOf(start);}}
+                };
+            diff.elements = e;
+            _menu.AddMenuScreen(diff);
+
+            e = new Dictionary<string, Action>
+                {
+                    {"Start Game", () => { running = true; }},
+                    {
+                        "Difficulty", () =>
+                            {
+                                diff.selectedIndex = hard ? 0 : 1;
+                                _menu.selectedMenuScreen = _menu.Screens.IndexOf(diff);
+                            }
+                    },
+                    {"Quit", Exit}
+                };
+
+            start.elements = e;
+            _menu.AddMenuScreen(start);
+            _menu.selectedMenuScreen = _menu.Screens.IndexOf(start);
+        }
+
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -72,15 +106,7 @@ namespace Asteroids
             _scoreFont = Content.Load<SpriteFont>("gameFont");
 
             _menu.Initialize(this, GraphicsDevice.Viewport, _scoreFont);
-
-            MenuScreen s = new MenuScreen("Asteroids");
-            var e = new Dictionary<string, Action>();
-
-            e.Add("Start Game", () => { running = true; });
-            e.Add("Quit", Exit);
-
-            s.elements = e;
-            _menu.AddMenuScreen(s);
+            InitMenu();
 
             _shootSound = Content.Load<SoundEffect>("Shoot");
 
