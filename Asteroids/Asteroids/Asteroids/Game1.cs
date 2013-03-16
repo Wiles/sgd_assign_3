@@ -67,6 +67,7 @@ namespace Asteroids
         {
             var diff = new MenuScreen("Difficulty");
             var start = new MenuScreen("Asteroids");
+            var options = new MenuScreen("Options");
             var about = new MenuScreen("About");
             var debugger = new MenuScreen("Debug");
             pause = new MenuScreen("Paused");
@@ -75,9 +76,9 @@ namespace Asteroids
             var e = new Dictionary<string, Action>
                 {
                     {"Hard", () => { hard = true; 
-                        _menu.selectedMenuScreen = _menu.MainMenuIndex;}}, 
+                        _menu.selectedMenuScreen = _menu.Screens.IndexOf(options);}}, 
                     {"Easy", () => { hard = false; 
-                         _menu.selectedMenuScreen = _menu.MainMenuIndex;}}
+                         _menu.selectedMenuScreen = _menu.Screens.IndexOf(options);}}
                 };
             diff.elements = e;
 
@@ -86,29 +87,18 @@ namespace Asteroids
                 {
                     {"On", () => { debug = true;
                                      Circle.Texture = _collisionTexture;
-                        _menu.selectedMenuScreen = _menu.MainMenuIndex;}}, 
+                        _menu.selectedMenuScreen = _menu.Screens.IndexOf(options);}}, 
                     {"Off", () => { debug = false;
                                       Circle.Texture = null;
-                         _menu.selectedMenuScreen = _menu.MainMenuIndex;}}
+                         _menu.selectedMenuScreen = _menu.Screens.IndexOf(options);}}
                 };
             debugger.elements = e;
 
             e = new Dictionary<string, Action>
                 {
                     {"Start Game", newGame},
-                    {
-                        "Difficulty", () =>
-                            {
-                                diff.selectedIndex = hard ? 0 : 1;
-                                _menu.selectedMenuScreen = _menu.Screens.IndexOf(diff);
-                            }
-                    },
+                    {"Options", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(options); }},
                     {"About", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(about); }},
-                    {"Debug", () =>
-                        {
-                            debugger.selectedIndex = debug ? 0 : 1;
-                            _menu.selectedMenuScreen = _menu.Screens.IndexOf(debugger);
-                        }},
                     {"Quit", Exit}
                 };
 
@@ -117,19 +107,8 @@ namespace Asteroids
             e = new Dictionary<string, Action>
                 {
                     {"Resume", () => { running = true; }},
-                    {
-                        "Difficulty", () =>
-                            {
-                                diff.selectedIndex = hard ? 0 : 1;
-                                _menu.selectedMenuScreen = _menu.Screens.IndexOf(diff);
-                            }
-                    },
+                    {"Options", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(options); }},
                     {"About", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(about); }},
-                    {"Debug", () =>
-                        {
-                            debugger.selectedIndex = debug ? 0 : 1;
-                            _menu.selectedMenuScreen = _menu.Screens.IndexOf(debugger);
-                        }},
                     {"Quit", Exit}
                 };
 
@@ -152,9 +131,28 @@ namespace Asteroids
 
             about.elements = e;
 
+
+            e = new Dictionary<string, Action>
+                {
+                    {"Debug", () =>
+                        {
+                            debugger.selectedIndex = debug ? 0 : 1;
+                            _menu.selectedMenuScreen = _menu.Screens.IndexOf(debugger);
+                        }},
+                    {"Difficulty", () =>
+                        {
+                            diff.selectedIndex = hard ? 0 : 1;
+                            _menu.selectedMenuScreen = _menu.Screens.IndexOf(diff);
+                        }
+                    }
+                };
+
+            options.elements = e;
+
             _menu.AddMenuScreen(start);
             _menu.AddMenuScreen(diff);
             _menu.AddMenuScreen(_gameOver);
+            _menu.AddMenuScreen(options);
             _menu.AddMenuScreen(debugger);
             _menu.AddMenuScreen(about);
             _menu.AddMenuScreen(pause);
