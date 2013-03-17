@@ -72,6 +72,7 @@ namespace Asteroids
             var debugger = new MenuScreen("Debug");
             pause = new MenuScreen("Paused");
             _gameOver = new MenuScreen("Game Over");
+            var controls = new MenuScreen("Controls");
 
             var e = new Dictionary<string, Action>
                 {
@@ -99,6 +100,7 @@ namespace Asteroids
                     {"Start Game", newGame},
                     {"Options", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(options); }},
                     {"About", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(about); }},
+                    {"Controls", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(controls); }},
                     {"Quit", Exit}
                 };
 
@@ -107,8 +109,10 @@ namespace Asteroids
             e = new Dictionary<string, Action>
                 {
                     {"Resume", () => { running = true; }},
+                    {"New Game", newGame },
                     {"Options", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(options); }},
                     {"About", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(about); }},
+                    {"Controls", () => { _menu.selectedMenuScreen = _menu.Screens.IndexOf(controls); }},
                     {"Quit", Exit}
                 };
 
@@ -149,6 +153,18 @@ namespace Asteroids
 
             options.elements = e;
 
+            e = new Dictionary<string, Action>
+            {
+                {"Fire             Space/R1", null},
+                {"Forward       Up/D-pad up", null},
+                {"Left      Left/D-pad left", null},
+                {"Right   Right/D-pad right", null},
+                {"Pause            Esc/Back", null},
+                {"Select            Enter/A", null}
+            };
+
+            controls.elements = e;
+
             _menu.AddMenuScreen(start);
             _menu.AddMenuScreen(diff);
             _menu.AddMenuScreen(_gameOver);
@@ -156,6 +172,7 @@ namespace Asteroids
             _menu.AddMenuScreen(debugger);
             _menu.AddMenuScreen(about);
             _menu.AddMenuScreen(pause);
+            _menu.AddMenuScreen(controls);
 
             _menu.selectedMenuScreen = _menu.Screens.IndexOf(start);
             _menu.MainMenuIndex = _menu.Screens.IndexOf(start);
@@ -174,7 +191,7 @@ namespace Asteroids
             //Don't set this if you don't want to draw the hitboxes
             _collisionTexture = Content.Load<Texture2D>("Collision");
 
-            _scoreFont = Content.Load<SpriteFont>("gameFont");
+            _scoreFont = Content.Load<SpriteFont>("Mono");
 
             _menuMove = Content.Load<SoundEffect>("menuMove");
             _menuSelect = Content.Load<SoundEffect>("menuSelect");
