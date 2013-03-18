@@ -17,6 +17,7 @@ namespace Asteroids
 
         private SoundEffect _menuMove;
         private SoundEffect _menuSelect;
+        private SoundEffect _menuBack;
 
         public int selectedMenuScreen { get; set; }
 
@@ -33,13 +34,14 @@ namespace Asteroids
         private bool enter;
         private bool escape;
 
-        public void Initialize(Game1 game, Viewport viewport, SpriteFont font, SoundEffect move, SoundEffect select)
+        public void Initialize(Game1 game, Viewport viewport, SpriteFont font, SoundEffect move, SoundEffect select, SoundEffect back)
         {
             _viewport = viewport;
             _font = font;
             _game = game;
             _menuMove = move;
             _menuSelect = select;
+            _menuBack = back;
         }
 
         public Circle GetCircle()
@@ -136,7 +138,7 @@ namespace Asteroids
                     var actions = screen.elements.Values.ToArray();
                     if (screen.selectedIndex == actions.Count())
                     {
-                        _menuSelect.Play();
+                        _menuBack.Play();
                         if (screen.Parent == null)
                         {
                             this.selectedMenuScreen = MainMenuIndex;
@@ -169,11 +171,14 @@ namespace Asteroids
                     escape = true;
                     if (screen.Parent != null)
                     {
+                        _menuBack.Play();
+
                         selectedMenuScreen = screens.IndexOf(screen.Parent);
                     }
-                    else
-                    {
+                    else if(screen != screens[MainMenuIndex]){
+                        _menuBack.Play();
                         selectedMenuScreen = MainMenuIndex;
+                    
                     }
                 }
             }

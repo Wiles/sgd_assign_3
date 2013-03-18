@@ -42,6 +42,7 @@ namespace Asteroids
         private SoundEffect _explosionSound;
         private SoundEffect _menuMove;
         private SoundEffect _menuSelect;
+        private SoundEffect _menuBack;
 
         private Texture2D _ufoTexture;
 
@@ -196,8 +197,9 @@ namespace Asteroids
 
             _menuMove = Content.Load<SoundEffect>("menuMove");
             _menuSelect = Content.Load<SoundEffect>("menuSelect");
+            _menuBack = Content.Load<SoundEffect>("menuBack");
 
-            _menu.Initialize(this, GraphicsDevice.Viewport, _scoreFont, _menuMove, _menuSelect);
+            _menu.Initialize(this, GraphicsDevice.Viewport, _scoreFont, _menuMove, _menuSelect, _menuBack);
             InitMenu();
 
             _shootSound = Content.Load<SoundEffect>("Shoot");
