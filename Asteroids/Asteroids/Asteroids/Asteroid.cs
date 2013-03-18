@@ -11,13 +11,13 @@ namespace Asteroids
         public Vector2 Position;
         private float _projectileMoveSpeed;
         private double _radians;
-        private Texture2D _texture;
+        public Texture2D Texture{get;set;}
         private Viewport _viewport;
 
         private double _x;
 
         private double _y;
-
+        
         public double Radians
         {
             get { return _radians; }
@@ -25,19 +25,19 @@ namespace Asteroids
 
         public int Generation { get; set; }
 
-        private double Scale
+        public double Scale
         {
             get { return 1.0/Generation; }
         }
 
         public int Width
         {
-            get { return (int) (_texture.Width*Scale); }
+            get { return (int) (Texture.Width*Scale); }
         }
 
         public int Height
         {
-            get { return (int) (_texture.Height*Scale); }
+            get { return (int) (Texture.Height*Scale); }
         }
 
         public float Speed
@@ -49,7 +49,7 @@ namespace Asteroids
         public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed,
                                int generation)
         {
-            _texture = texture;
+            Texture = texture;
             Position = position;
             _viewport = viewport;
 
@@ -68,16 +68,15 @@ namespace Asteroids
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             Position.X += _projectileMoveSpeed;
-
             _x += _projectileMoveSpeed*Math.Cos(_radians);
             _y += _projectileMoveSpeed*Math.Sin(_radians);
-            if (_x > _viewport.Width + _texture.Width)
-                _x = -_texture.Width + 1;
-            else if (_x < -_texture.Width)
+            if (_x > _viewport.Width + Texture.Width)
+                _x = -Texture.Width + 1;
+            else if (_x < -Texture.Width)
                 _x = _viewport.Width;
-            else if (_y < -_texture.Height)
+            else if (_y < -Texture.Height)
                 _y = _viewport.Height;
-            else if (_y > _viewport.Height + _texture.Height)
+            else if (_y > _viewport.Height + Texture.Height)
                 _y = -Height + 1;
 
             Position.X = (int) _x;
@@ -86,8 +85,15 @@ namespace Asteroids
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, Position, null, Color.White, 0f,
-                             new Vector2((int)(_texture.Width / 2.0), (int)(_texture.Width / 2.0)), (float)Scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(Texture, 
+                Position, 
+                null, 
+                Color.White, 
+                0f,
+                new Vector2((int)(Texture.Width / 2.0), (int)(Texture.Width / 2.0)), 
+                (float)Scale, 
+                SpriteEffects.None, 
+                0f);
             foreach (var circle in GetCircles())
             {
                 circle.Draw(spriteBatch);
@@ -96,7 +102,7 @@ namespace Asteroids
 
         public Circle GetCircle()
         {
-            double radius = _texture.Width/2.0*Scale;
+            double radius = Texture.Width/2.0*Scale;
             return new Circle(_x, _y, radius);
         }
 

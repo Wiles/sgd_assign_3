@@ -43,8 +43,11 @@ namespace Asteroids
         private SoundEffect _menuMove;
         private SoundEffect _menuSelect;
         private SoundEffect _menuBack;
+        private SoundEffect _playerExplosion;
 
         private Texture2D _ufoTexture;
+
+        private List<Explosion> _explosions;
 
         private long _lastFire;
 
@@ -60,6 +63,7 @@ namespace Asteroids
             _satellite = new Satellite();
             _fireTime = TimeSpan.FromSeconds(.25f);
             _menu = new Menu();
+            _explosions = new List<Explosion>();
 
             base.Initialize();
         }
@@ -189,7 +193,7 @@ namespace Asteroids
             _playerTexture = Content.Load<Texture2D>("Player");
 
             _asteroidTexture = Content.Load<Texture2D>("Asteroid");
-
+            
             //Don't set this if you don't want to draw the hitboxes
             _collisionTexture = Content.Load<Texture2D>("Collision");
 
@@ -198,6 +202,7 @@ namespace Asteroids
             _menuMove = Content.Load<SoundEffect>("menuMove");
             _menuSelect = Content.Load<SoundEffect>("menuSelect");
             _menuBack = Content.Load<SoundEffect>("menuBack");
+            _playerExplosion = Content.Load<SoundEffect>("playerExplosion");
 
             _menu.Initialize(this, GraphicsDevice.Viewport, _scoreFont, _menuMove, _menuSelect, _menuBack);
             InitMenu();
@@ -216,7 +221,7 @@ namespace Asteroids
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
             _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
             
-            StartWave(1);
+            StartWave(5);
 
             score.Initialize(GraphicsDevice.Viewport, _scoreFont, new Vector2(0, 0));
         }
@@ -234,7 +239,6 @@ namespace Asteroids
 
             long delta = gameTime.ElapsedGameTime.Milliseconds;
             var inputState = new Input(Keyboard.GetState(), GamePad.GetState(PlayerIndex.One));
-            
             if (running)
             {
                 if (inputState.Escape())
@@ -266,6 +270,17 @@ namespace Asteroids
                     if (_projectiles[i].Active == false)
                     {
                         _projectiles.RemoveAt(i);
+                    }
+                }
+
+
+                for (int i = _explosions.Count - 1; i >= 0; i--)
+                {
+                    _explosions[i].Update(GraphicsDevice, inputState, delta);
+
+                    if (_explosions[i].Active == false)
+                    {
+                        _explosions.RemoveAt(i);
                     }
                 }
                 UpdateAsteroids(delta, inputState);
@@ -304,6 +319,18 @@ namespace Asteroids
                 if(asteroid.GetCircle().Intersects(_player.GetCircle())
                     && Circle.Intersects(asteroid.GetCircles(), _player.GetCircles())){
                         _player.Lives -= 1;
+                        _playerExplosion.Play();
+                        var explosion = new Explosion()
+                        {
+                            Active = true,
+                            Direction = _player.Angle,
+                            Position = _player.Position - new Vector2(_player.Width / 2, _player.Height / 2),
+                            Scale = 1.0f,
+                            Texture = _player.Texture,
+                            Speed = _player.Speed
+                        };
+
+                        _explosions.Add(explosion);
                     _player.X = GraphicsDevice.Viewport.TitleSafeArea.X
                                              + GraphicsDevice.Viewport.TitleSafeArea.Width / 2;
                     _player.Y = GraphicsDevice.Viewport.TitleSafeArea.Y
@@ -357,6 +384,16 @@ namespace Asteroids
                                             parent.Generation + 1);
                         _asteroids.Add(asteroid);
                     }
+                    var explosion = new Explosion()
+                    {
+                        Active = true,
+                        Direction = parent.Radians,
+                        Position = parent.Position - new Vector2(parent.Width/2, parent.Height/2),
+                        Scale = (float)parent.Scale,
+                        Texture = parent.Texture,
+                        Speed = parent.Speed
+                    };
+                    _explosions.Add(explosion);
                     _asteroids.RemoveAt(i);
                     if(_asteroids.Count == 0){
                         //TODO increase count with each wave
@@ -370,8 +407,9 @@ namespace Asteroids
         {
             GraphicsDevice.Clear(Color.Black);
 
-
+            
             _spriteBatch.Begin();
+
             if (running)
             {
                 _satellite.Draw(_spriteBatch);
@@ -385,6 +423,11 @@ namespace Asteroids
                 foreach (Asteroid asteroid in _asteroids)
                 {
                     asteroid.Draw(_spriteBatch);
+                }
+
+                foreach (Explosion explosion in _explosions)
+                {
+                    explosion.Draw(_spriteBatch);
                 }
 
                 score.Draw(_spriteBatch);

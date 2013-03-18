@@ -9,6 +9,7 @@ namespace Asteroids
     {
         private double _speed;
         private Texture2D _texture;
+        public Texture2D Texture { get { return _texture; } }
         public double X { get; set; }
         public double Y { get; set; }
         public double MaxSpeed { get; set; }
