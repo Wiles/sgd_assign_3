@@ -67,9 +67,10 @@ namespace Asteroids
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
-            Position.X += _projectileMoveSpeed;
-            _x += _projectileMoveSpeed*Math.Cos(_radians);
-            _y += _projectileMoveSpeed*Math.Sin(_radians);
+            var change = (float)(_projectileMoveSpeed * delta / 1000.0);
+            Position.X += change;
+            _x += change * Math.Cos(_radians);
+            _y += change * Math.Sin(_radians);
             if (_x > _viewport.Width + Texture.Width)
                 _x = -Texture.Width + 1;
             else if (_x < -Texture.Width)

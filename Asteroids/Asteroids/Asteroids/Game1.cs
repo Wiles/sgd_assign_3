@@ -327,7 +327,8 @@ namespace Asteroids
                             Position = _player.Position - new Vector2(_player.Width / 2, _player.Height / 2),
                             Scale = 1.0f,
                             Texture = _player.Texture,
-                            Speed = _player.Speed
+                            Speed = _player.Speed,
+                            Rotation = _player.Angle
                         };
 
                         _explosions.Add(explosion);
@@ -391,7 +392,8 @@ namespace Asteroids
                         Position = parent.Position - new Vector2(parent.Width/2, parent.Height/2),
                         Scale = (float)parent.Scale,
                         Texture = parent.Texture,
-                        Speed = parent.Speed
+                        Speed = parent.Speed,
+                        Rotation = 0
                     };
                     _explosions.Add(explosion);
                     _asteroids.RemoveAt(i);
@@ -463,7 +465,7 @@ namespace Asteroids
                 y = MathHelper.Clamp((float)y, (float)0, (float)GraphicsDevice.Viewport.Height);
                 var init = rand.NextDouble() * Math.PI * 2;
                 var asteroid = new Asteroid();
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, 1.0f, 1);
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, 50.0f, 1);
                 _asteroids.Add(asteroid);
             }
         }

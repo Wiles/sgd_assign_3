@@ -14,6 +14,7 @@ namespace Asteroids
         public Vector2 Position { get; set; }
         public double Speed { get; set; }
         public double Direction { get; set; }
+        public double Rotation { get; set; }
         public Texture2D Texture { get; set; }
         public float Scale { get; set; }
         private long elapsedTime;
@@ -30,13 +31,13 @@ namespace Asteroids
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var x in Enumerable.Range(0, 8))
+            foreach (var x in Enumerable.Range(0, 4))
             {
-                foreach (var y in Enumerable.Range(0, 8))
+                foreach (var y in Enumerable.Range(0, 4))
                 {
                     var position = Position;
-                    var width = Texture.Width / 8;
-                    var height = Texture.Height / 8;
+                    var width = Texture.Width / 4;
+                    var height = Texture.Height / 4;
                     var rec = new Rectangle( width * x, width * y , width, height);
 
                     position += new Vector2() + new Vector2(width * x * Scale, height * y * Scale);
@@ -51,7 +52,7 @@ namespace Asteroids
                         position,
                         rec,//source
                         Color.White,
-                        (x + y % 2 == 0)?1:-1 * (float)((elapsedTime % 1000.0 /1000.0) * (MathHelper.TwoPi)),//rotation
+                        (x + y % 2 == 0)?1:-1 * (float)(((elapsedTime % 1000.0 /1000.0) * (MathHelper.TwoPi))),//rotation
                         new Vector2(width/2,height/2),//origin
                         Scale,
                         SpriteEffects.None,
@@ -63,7 +64,7 @@ namespace Asteroids
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
-            Position += new Vector2((float)(Speed * Math.Cos(Direction)), (float)(Speed * Math.Sin(Direction)));
+            Position += new Vector2((float)(Speed * (delta / 1000.0) * Math.Cos(Direction)), (float)(Speed * (delta / 1000.0) * Math.Sin(Direction)));
 
             elapsedTime += delta;
             if(elapsedTime > 1000){
