@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    interface IEntity
+    internal interface IEntity
     {
         Circle GetCircle();
         IEnumerable<Circle> GetCircles();

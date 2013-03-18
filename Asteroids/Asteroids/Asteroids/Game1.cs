@@ -9,45 +9,40 @@ namespace Asteroids
 {
     public class Game1 : Game
     {
-        private bool _running;
-        private bool _hard;
-        private bool _debug;
-
-        private MenuScreen _pause;
-        private MenuScreen _gameOver;
-
-        private Menu _menu;
-
         private const float MaxSpeed = 500.0f;
         private const float ProjectileMoveSpeed = MaxSpeed + 1;
         private readonly List<Asteroid> _asteroids = new List<Asteroid>();
         private readonly List<Projectile> _projectiles = new List<Projectile>();
         private readonly Random _rand = new Random();
-        private Score _score = new Score();
         private Texture2D _asteroidTexture;
         private Texture2D _collisionTexture;
-
-        private TimeSpan _fireTime;
-        private Player _player;
-        private Texture2D _playerTexture;
-        private Satellite _satellite;
-
-        private Texture2D _projectileTexture;
-        private SpriteFont _scoreFont;
-        private SpriteBatch _spriteBatch;
-
-        private SoundEffect _shootSound;
+        private bool _debug;
         private SoundEffect _explosionSound;
-        private SoundEffect _menuMove;
-        private SoundEffect _menuSelect;
-        private SoundEffect _menuBack;
-        private SoundEffect _playerExplosion;
-
-        private Texture2D _ufoTexture;
-
         private List<Explosion> _explosions;
 
+        private TimeSpan _fireTime;
+        private MenuScreen _gameOver;
+        private bool _hard;
         private long _lastFire;
+        private Menu _menu;
+        private SoundEffect _menuBack;
+        private SoundEffect _menuMove;
+        private SoundEffect _menuSelect;
+        private MenuScreen _pause;
+        private Player _player;
+        private SoundEffect _playerExplosion;
+        private Texture2D _playerTexture;
+
+        private Texture2D _projectileTexture;
+        private bool _running;
+        private Satellite _satellite;
+        private Score _score = new Score();
+        private SpriteFont _scoreFont;
+
+        private SoundEffect _shootSound;
+        private SpriteBatch _spriteBatch;
+
+        private Texture2D _ufoTexture;
 
         public Game1()
         {
@@ -78,22 +73,42 @@ namespace Asteroids
 
             var e = new Dictionary<string, Action>
                 {
-                    {"Hard", () => { _hard = true; 
-                        _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);}}, 
-                    {"Easy", () => { _hard = false; 
-                         _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);}}
+                    {
+                        "Hard", () =>
+                            {
+                                _hard = true;
+                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);
+                            }
+                    },
+                    {
+                        "Easy", () =>
+                            {
+                                _hard = false;
+                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);
+                            }
+                    }
                 };
             diff.Elements = e;
 
 
             e = new Dictionary<string, Action>
                 {
-                    {"On", () => { _debug = true;
-                                     Circle.Texture = _collisionTexture;
-                        _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);}}, 
-                    {"Off", () => { _debug = false;
-                                      Circle.Texture = null;
-                         _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);}}
+                    {
+                        "On", () =>
+                            {
+                                _debug = true;
+                                Circle.Texture = _collisionTexture;
+                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);
+                            }
+                    },
+                    {
+                        "Off", () =>
+                            {
+                                _debug = false;
+                                Circle.Texture = null;
+                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);
+                            }
+                    }
                 };
             debugger.Elements = e;
 
@@ -107,11 +122,11 @@ namespace Asteroids
                 };
 
             start.Elements = e;
-            
+
             e = new Dictionary<string, Action>
                 {
                     {"Resume", () => { _running = true; }},
-                    {"New Game", NewGame },
+                    {"New Game", NewGame},
                     {"Options", () => { _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options); }},
                     {"About", () => { _menu.SelectedMenuScreen = _menu.Screens.IndexOf(about); }},
                     {"Controls", () => { _menu.SelectedMenuScreen = _menu.Screens.IndexOf(controls); }},
@@ -140,31 +155,34 @@ namespace Asteroids
 
             e = new Dictionary<string, Action>
                 {
-                    {"Debug", () =>
-                        {
-                            debugger.SelectedIndex = _debug ? 0 : 1;
-                            _menu.SelectedMenuScreen = _menu.Screens.IndexOf(debugger);
-                        }},
-                    {"Difficulty", () =>
-                        {
-                            diff.SelectedIndex = _hard ? 0 : 1;
-                            _menu.SelectedMenuScreen = _menu.Screens.IndexOf(diff);
-                        }
+                    {
+                        "Debug", () =>
+                            {
+                                debugger.SelectedIndex = _debug ? 0 : 1;
+                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(debugger);
+                            }
+                    },
+                    {
+                        "Difficulty", () =>
+                            {
+                                diff.SelectedIndex = _hard ? 0 : 1;
+                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(diff);
+                            }
                     }
                 };
 
             options.Elements = e;
 
             e = new Dictionary<string, Action>
-            {
-                {"Fire/Select        Space/R1", null},
-                {"Pause/Back         Esc/Back", null},
-                {"Thrusters       Up/D-pad up", null},
-                {"Up            Left/D-pad Up", null},
-                {"Down        Left/D-pad Down", null},
-                {"Left        Left/D-pad left", null},
-                {"Right     Right/D-pad right", null}
-            };
+                {
+                    {"Fire/Select        Space/R1", null},
+                    {"Pause/Back         Esc/Back", null},
+                    {"Thrusters       Up/D-pad up", null},
+                    {"Up            Left/D-pad Up", null},
+                    {"Down        Left/D-pad Down", null},
+                    {"Left        Left/D-pad left", null},
+                    {"Right     Right/D-pad right", null}
+                };
 
             controls.Elements = e;
 
@@ -190,7 +208,7 @@ namespace Asteroids
             _playerTexture = Content.Load<Texture2D>("Player");
 
             _asteroidTexture = Content.Load<Texture2D>("Asteroid");
-            
+
             //Don't set this if you don't want to draw the hitboxes
             _collisionTexture = Content.Load<Texture2D>("Collision");
 
@@ -201,7 +219,7 @@ namespace Asteroids
             _menuBack = Content.Load<SoundEffect>("menuBack");
             _playerExplosion = Content.Load<SoundEffect>("playerExplosion");
 
-            _menu.Initialize( GraphicsDevice.Viewport, _scoreFont, _menuMove, _menuSelect, _menuBack);
+            _menu.Initialize(GraphicsDevice.Viewport, _scoreFont, _menuMove, _menuSelect, _menuBack);
             InitMenu();
 
             _shootSound = Content.Load<SoundEffect>("Shoot");
@@ -222,7 +240,6 @@ namespace Asteroids
 
         protected override void Update(GameTime gameTime)
         {
-
             long delta = gameTime.ElapsedGameTime.Milliseconds;
             var inputState = new Input(Keyboard.GetState(), GamePad.GetState(PlayerIndex.One));
             if (_running)
@@ -302,28 +319,31 @@ namespace Asteroids
 
             foreach (Asteroid asteroid in _asteroids)
             {
-                if(asteroid.GetCircle().Intersects(_player.GetCircle())
-                    && Circle.Intersects(asteroid.GetCircles(), _player.GetCircles())){
-                        _player.Lives -= 1;
-                        _playerExplosion.Play();
-                        var explosion = new Explosion
+                if (asteroid.GetCircle().Intersects(_player.GetCircle())
+                    && Circle.Intersects(asteroid.GetCircles(), _player.GetCircles()))
+                {
+                    _player.Lives -= 1;
+                    _playerExplosion.Play();
+                    var explosion = new Explosion
                         {
                             Active = true,
                             Direction = _player.Angle,
-                            Position = _player.Position - new Vector2((float) (_player.Width / 2.0), (float) (_player.Height / 2.0)),
+                            Position =
+                                _player.Position -
+                                new Vector2((float) (_player.Width/2.0), (float) (_player.Height/2.0)),
                             Scale = 1.0f,
                             Texture = _player.Texture,
                             Speed = _player.Speed
                         };
 
-                        _explosions.Add(explosion);
+                    _explosions.Add(explosion);
                     _player.X = GraphicsDevice.Viewport.TitleSafeArea.X
-                                             + GraphicsDevice.Viewport.TitleSafeArea.Width / 2;
+                                + GraphicsDevice.Viewport.TitleSafeArea.Width/2;
                     _player.Y = GraphicsDevice.Viewport.TitleSafeArea.Y
-                                             + GraphicsDevice.Viewport.TitleSafeArea.Height / 2;
+                                + GraphicsDevice.Viewport.TitleSafeArea.Height/2;
                     _player.Angle = MathHelper.ToRadians(-90);
                     _player.Speed = 0;
-                    if(_player.Lives < 0)
+                    if (_player.Lives < 0)
                     {
                         _running = false;
                         _menu.MainMenuIndex = _menu.Screens.IndexOf(_gameOver);
@@ -371,17 +391,19 @@ namespace Asteroids
                         _asteroids.Add(asteroid);
                     }
                     var explosion = new Explosion
-                    {
-                        Active = true,
-                        Direction = parent.Radians,
-                        Position = parent.Position - new Vector2((float) (parent.Width/2.0), (float) (parent.Height/2.0)),
-                        Scale = (float)parent.Scale,
-                        Texture = parent.Texture,
-                        Speed = parent.Speed
-                    };
+                        {
+                            Active = true,
+                            Direction = parent.Radians,
+                            Position =
+                                parent.Position - new Vector2((float) (parent.Width/2.0), (float) (parent.Height/2.0)),
+                            Scale = (float) parent.Scale,
+                            Texture = parent.Texture,
+                            Speed = parent.Speed
+                        };
                     _explosions.Add(explosion);
                     _asteroids.RemoveAt(i);
-                    if(_asteroids.Count == 0){
+                    if (_asteroids.Count == 0)
+                    {
                         //TODO increase count with each wave
                         StartWave(8);
                     }
@@ -393,7 +415,7 @@ namespace Asteroids
         {
             GraphicsDevice.Clear(Color.Black);
 
-            
+
             _spriteBatch.Begin();
 
             if (_running)
@@ -441,15 +463,16 @@ namespace Asteroids
         {
             for (int i = 0; i < asteroids; ++i)
             {
-                var direction = _rand.NextDouble() * Math.PI * 2;
-                var x = GraphicsDevice.Viewport.Width/2.0 + GraphicsDevice.Viewport.Width * Math.Cos(direction);
-                
-                var y = GraphicsDevice.Viewport.Height/2.0 + GraphicsDevice.Viewport.Height * Math.Sin(direction);
-                x = MathHelper.Clamp((float)x, 0, GraphicsDevice.Viewport.Width);
-                y = MathHelper.Clamp((float)y, 0, GraphicsDevice.Viewport.Height);
-                var init = _rand.NextDouble() * Math.PI * 2;
+                double direction = _rand.NextDouble()*Math.PI*2;
+                double x = GraphicsDevice.Viewport.Width/2.0 + GraphicsDevice.Viewport.Width*Math.Cos(direction);
+
+                double y = GraphicsDevice.Viewport.Height/2.0 + GraphicsDevice.Viewport.Height*Math.Sin(direction);
+                x = MathHelper.Clamp((float) x, 0, GraphicsDevice.Viewport.Width);
+                y = MathHelper.Clamp((float) y, 0, GraphicsDevice.Viewport.Height);
+                double init = _rand.NextDouble()*Math.PI*2;
                 var asteroid = new Asteroid();
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, 50.0f, 1);
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int) x, (int) y), init,
+                                    50.0f, 1);
                 _asteroids.Add(asteroid);
             }
         }
@@ -461,10 +484,10 @@ namespace Asteroids
             _projectiles.Clear();
             _player = new Player();
             var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
-                                             + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Width/2
                                              ,
                                              GraphicsDevice.Viewport.TitleSafeArea.Y
-                                             + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
             _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
 
             StartWave(5);

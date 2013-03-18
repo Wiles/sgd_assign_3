@@ -30,31 +30,17 @@ namespace Asteroids
             get { return _texture.Height; }
         }
 
-        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed)
-        {
-            _texture = texture;
-            Position = position;
-            _viewport = viewport;
-
-            Active = true;
-
-            _projectileMoveSpeed = speed;
-
-            _x = position.X;
-            _y = position.Y;
-
-            _radians = radians;
-        }
+        #region IEntity Members
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
-            double percent = delta / 1000.0;
-            Position.X += (float)(_projectileMoveSpeed * percent);
+            double percent = delta/1000.0;
+            Position.X += (float) (_projectileMoveSpeed*percent);
 
-            _x += _projectileMoveSpeed * percent * Math.Cos(_radians);
-            _y += _projectileMoveSpeed * percent * Math.Sin(_radians);
-            _xTravel += _projectileMoveSpeed * percent * Math.Cos(_radians);
-            _yTravel += _projectileMoveSpeed * percent * Math.Sin(_radians);
+            _x += _projectileMoveSpeed*percent*Math.Cos(_radians);
+            _y += _projectileMoveSpeed*percent*Math.Sin(_radians);
+            _xTravel += _projectileMoveSpeed*percent*Math.Cos(_radians);
+            _yTravel += _projectileMoveSpeed*percent*Math.Sin(_radians);
             if (_x > _viewport.Width + Width)
                 _x = -Width + 1;
             else if (_x < -Width)
@@ -75,8 +61,8 @@ namespace Asteroids
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, Position, null, Color.White, 0f,
-                             new Vector2((int)(Width / 2.0), (int)(Height / 2.0)), 1f, SpriteEffects.None, 0f);
-            foreach (var circle in GetCircles())
+                             new Vector2((int) (Width/2.0), (int) (Height/2.0)), 1f, SpriteEffects.None, 0f);
+            foreach (Circle circle in GetCircles())
             {
                 circle.Draw(spriteBatch);
             }
@@ -87,10 +73,28 @@ namespace Asteroids
             double radius = Width/2.0;
             return new Circle(_x, _y, radius);
         }
-        
+
         public IEnumerable<Circle> GetCircles()
         {
-            return new [] { GetCircle() };
+            return new[] {GetCircle()};
+        }
+
+        #endregion
+
+        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed)
+        {
+            _texture = texture;
+            Position = position;
+            _viewport = viewport;
+
+            Active = true;
+
+            _projectileMoveSpeed = speed;
+
+            _x = position.X;
+            _y = position.Y;
+
+            _radians = radians;
         }
     }
 }

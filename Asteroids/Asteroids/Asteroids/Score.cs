@@ -6,10 +6,37 @@ namespace Asteroids
 {
     internal class Score : IEntity
     {
-        private Vector2 _position;
         private SpriteFont _font;
 
         private int _points;
+        private Vector2 _position;
+
+        #region IEntity Members
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.DrawString(_font, "score: " + _points, _position, Color.White);
+            foreach (Circle circle in GetCircles())
+            {
+                circle.Draw(spriteBatch);
+            }
+        }
+
+        public void Update(GraphicsDevice graphics, Input input, long delta)
+        {
+        }
+
+        public Circle GetCircle()
+        {
+            return new Circle(0, 0, 0);
+        }
+
+        public IEnumerable<Circle> GetCircles()
+        {
+            return new[] {GetCircle()};
+        }
+
+        #endregion
 
         public void Initialize(SpriteFont font, Vector2 position)
         {
@@ -20,30 +47,6 @@ namespace Asteroids
         public void AddPoints(int points)
         {
             _points += points;
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.DrawString(_font, "score: " + _points, _position, Color.White);
-            foreach (var circle in GetCircles())
-            {
-                circle.Draw(spriteBatch);
-            }
-        }
-
-        public void Update(GraphicsDevice graphics, Input input, long delta)
-        {
-            
-        }
-
-        public Circle GetCircle()
-        {
-            return new Circle(0,0,0);
-        }
-
-        public IEnumerable<Circle> GetCircles()
-        {
-            return new []{GetCircle()};
         }
     }
 }
