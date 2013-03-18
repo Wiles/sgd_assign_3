@@ -9,6 +9,8 @@ namespace Asteroids
 {
     class Explosion:IEntity
     {
+        private readonly int SEGMENTS = 4;
+
         private Random rand = new Random();
         public bool Active {get;set;}
         public Vector2 Position { get; set; }
@@ -31,13 +33,13 @@ namespace Asteroids
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var x in Enumerable.Range(0, 4))
+            foreach (var x in Enumerable.Range(0, SEGMENTS))
             {
-                foreach (var y in Enumerable.Range(0, 4))
+                foreach (var y in Enumerable.Range(0, SEGMENTS))
                 {
                     var position = Position;
-                    var width = Texture.Width / 4;
-                    var height = Texture.Height / 4;
+                    var width = Texture.Width / SEGMENTS;
+                    var height = Texture.Height / SEGMENTS;
                     var rec = new Rectangle( width * x, width * y , width, height);
 
                     position += new Vector2() + new Vector2(width * x * Scale, height * y * Scale);
@@ -52,7 +54,7 @@ namespace Asteroids
                         position,
                         rec,//source
                         Color.White,
-                        (x + y % 2 == 0)?1:-1 * (float)(((elapsedTime % 1000.0 /1000.0) * (MathHelper.TwoPi))),//rotation
+                        ((x + y) % 2 == 0)?1:-1 * (float)(((elapsedTime % 1000.0 /1000.0) * (MathHelper.TwoPi))),//rotation
                         new Vector2(width/2,height/2),//origin
                         Scale,
                         SpriteEffects.None,
