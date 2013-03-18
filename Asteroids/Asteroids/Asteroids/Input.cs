@@ -22,6 +22,11 @@ namespace Asteroids
             return _keyboard.IsKeyDown(Keys.Up) || _gamePad.IsButtonDown(Buttons.DPadUp);
         }
 
+        public bool Thrusters()
+        {
+            return _keyboard.IsKeyDown(Keys.Up) || _gamePad.IsButtonDown(Buttons.A);
+        }
+
         public bool Down()
         {
             return _keyboard.IsKeyDown(Keys.Down) || _gamePad.IsButtonDown(Buttons.DPadDown);
@@ -44,12 +49,7 @@ namespace Asteroids
 
         public bool Fire()
         {
-            return _keyboard.IsKeyDown(Keys.Space) || _gamePad.IsButtonDown(Buttons.RightShoulder);
-        }
-
-        public bool Select()
-        {
-            return _keyboard.IsKeyDown(Keys.Enter) || _gamePad.IsButtonDown(Buttons.A);
+            return _keyboard.IsKeyDown(Keys.Space) || _gamePad.IsButtonDown(Buttons.RightTrigger);
         }
     }
 }

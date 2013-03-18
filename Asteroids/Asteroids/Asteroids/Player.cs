@@ -81,7 +81,7 @@ namespace Asteroids
             {
                 Angle += radPerSecond * percent;
             }
-            if (input.Up())
+            if (input.Thrusters())
             {
                 Speed += accelerationPerSecond * percent;
             }

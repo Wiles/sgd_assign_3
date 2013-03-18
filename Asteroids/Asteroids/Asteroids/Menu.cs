@@ -11,7 +11,6 @@ namespace Asteroids
 {
     class Menu : IEntity
     {
-        private Boolean firstRound = true;
         private Viewport _viewport;
         private SpriteFont _font;
         private Game1 _game;
@@ -129,7 +128,7 @@ namespace Asteroids
             {
                 up = false;
             }
-            if(input.Select())
+            if(input.Fire())
             {
                 if (enter == false)
                 {
@@ -163,9 +162,24 @@ namespace Asteroids
                 enter = false;
             }
 
-            if(input.Escape())
+            if (input.Escape())
             {
-                selectedMenuScreen = MainMenuIndex;
+                if (escape == false)
+                {
+                    escape = true;
+                    if (screen.Parent != null)
+                    {
+                        selectedMenuScreen = screens.IndexOf(screen.Parent);
+                    }
+                    else
+                    {
+                        selectedMenuScreen = MainMenuIndex;
+                    }
+                }
+            }
+            else
+            {
+                escape = false;
             }
         }
 

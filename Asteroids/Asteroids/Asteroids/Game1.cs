@@ -155,12 +155,13 @@ namespace Asteroids
 
             e = new Dictionary<string, Action>
             {
-                {"Fire             Space/R1", null},
-                {"Forward       Up/D-pad up", null},
-                {"Left      Left/D-pad left", null},
-                {"Right   Right/D-pad right", null},
-                {"Pause            Esc/Back", null},
-                {"Select            Enter/A", null}
+                {"Fire/Select        Space/R1", null},
+                {"Pause/Back         Esc/Back", null},
+                {"Thrusters       Up/D-pad up", null},
+                {"Up            Left/D-pad Up", null},
+                {"Down        Left/D-pad Down", null},
+                {"Left        Left/D-pad left", null},
+                {"Right     Right/D-pad right", null}
             };
 
             controls.elements = e;
