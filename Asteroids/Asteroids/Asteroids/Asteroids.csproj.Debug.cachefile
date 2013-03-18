@@ -1,10 +1,10 @@
 Content\Player.xnb
 Content\Projectile.xnb
 Content\Asteroid.xnb
-Content\Collision.xnb
 Content\gameFont.xnb
 Content\Shoot.xnb
 Content\Explosion.xnb
+Content\Collision.xnb
 Content\UFO.xnb
 Content\menuMove.xnb
 Content\menuSelect.xnb

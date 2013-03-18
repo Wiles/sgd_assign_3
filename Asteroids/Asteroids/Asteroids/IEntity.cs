@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
     interface IEntity
     {
         Circle GetCircle();
-        Circle[] GetCircles();
+        IEnumerable<Circle> GetCircles();
         void Draw(SpriteBatch spriteBatch);
         void Update(GraphicsDevice graphics, Input input, long delta);
     }

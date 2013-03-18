@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
@@ -11,7 +11,7 @@ namespace Asteroids
         public Vector2 Position;
         private float _projectileMoveSpeed;
         private double _radians;
-        public Texture2D Texture{get;set;}
+        public Texture2D Texture{get; private set;}
         private Viewport _viewport;
 
         private double _x;
@@ -23,7 +23,7 @@ namespace Asteroids
             get { return _radians; }
         }
 
-        public int Generation { get; set; }
+        public int Generation { get; private set; }
 
         public double Scale
         {
@@ -107,9 +107,9 @@ namespace Asteroids
             return new Circle(_x, _y, radius);
         }
 
-        public Circle[] GetCircles()
+        public IEnumerable<Circle> GetCircles()
         {
-            return new Circle[] { GetCircle() };
+            return new[] { GetCircle() };
         }
     }
 }

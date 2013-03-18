@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 
 namespace Asteroids
 {
     class Satellite : IEntity
     {
-        public double X { get; set; }
-        public double Y { get; set; }
+        private double X { get; set; }
+        private double Y { get; set; }
         private Texture2D _texture;
-        public double Radius { get { return _texture.Width/2; } }
+        private double Radius { get { return _texture.Width/2.0; } }
         
         public void Initialize(Texture2D texture, Vector2 position)
         {
@@ -27,9 +23,9 @@ namespace Asteroids
             return new Circle(X, Y, Radius);
         }
 
-        public Circle[] GetCircles()
+        public IEnumerable<Circle> GetCircles()
         {
-            return new Circle[] { 
+            return new [] { 
                 new Circle(X , Y - Radius / 2, Radius / 3),
                 new Circle(X, Y, Radius / 2),
                 new Circle(X + Radius / 2.5, Y, Radius / 2),

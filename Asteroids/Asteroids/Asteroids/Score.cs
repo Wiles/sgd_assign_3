@@ -1,23 +1,20 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
     internal class Score : IEntity
     {
-        public Vector2 Position;
+        private Vector2 _position;
         private SpriteFont _font;
 
         private int _points;
-        private Viewport _viewport;
 
-        public void Initialize(Viewport viewport, SpriteFont font, Vector2 position)
+        public void Initialize(SpriteFont font, Vector2 position)
         {
             _font = font;
-            Position = position;
-            _viewport = viewport;
+            _position = position;
         }
 
         public void AddPoints(int points)
@@ -27,7 +24,7 @@ namespace Asteroids
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(_font, "score: " + _points, Position, Color.White);
+            spriteBatch.DrawString(_font, "score: " + _points, _position, Color.White);
             foreach (var circle in GetCircles())
             {
                 circle.Draw(spriteBatch);
@@ -44,9 +41,9 @@ namespace Asteroids
             return new Circle(0,0,0);
         }
 
-        public Circle[] GetCircles()
+        public IEnumerable<Circle> GetCircles()
         {
-            return new Circle[]{GetCircle()};
+            return new []{GetCircle()};
         }
     }
 }

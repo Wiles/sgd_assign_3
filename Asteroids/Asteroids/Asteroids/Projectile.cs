@@ -1,14 +1,14 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
     internal class Projectile : IEntity
     {
         public bool Active;
-        public Vector2 Position;
+        private Vector2 Position;
         private float _projectileMoveSpeed;
 
         private double _radians;
@@ -20,12 +20,12 @@ namespace Asteroids
         private double _y;
         private double _yTravel;
 
-        public int Width
+        private int Width
         {
             get { return _texture.Width; }
         }
 
-        public int Height
+        private int Height
         {
             get { return _texture.Height; }
         }
@@ -88,9 +88,9 @@ namespace Asteroids
             return new Circle(_x, _y, radius);
         }
         
-        public Circle[] GetCircles()
+        public IEnumerable<Circle> GetCircles()
         {
-            return new Circle[] { GetCircle() };
+            return new [] { GetCircle() };
         }
     }
 }

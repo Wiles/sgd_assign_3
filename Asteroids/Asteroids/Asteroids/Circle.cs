@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -13,11 +14,11 @@ namespace Asteroids
             set;
         }
 
-        public Circle(double X, double Y, double Radius)
+        public Circle(double x, double y, double radius)
         {
-            this.X = X;
-            this.Y = Y;
-            this.Radius = Radius;
+            X = x;
+            Y = y;
+            Radius = radius;
         }
 
         public double X { get; set; }
@@ -26,7 +27,7 @@ namespace Asteroids
 
         public bool Intersects(Circle that)
         {
-            if(that.Radius <= 0.0 || this.Radius <= 0.0){
+            if(that.Radius <= 0.0 || Radius <= 0.0){
                 return false;
             }
             double dx = X - that.X;
@@ -53,19 +54,9 @@ namespace Asteroids
             }
         }
 
-        public static Boolean Intersects(Circle[] one, Circle[] two)
+        public static Boolean Intersects(IEnumerable<Circle> one, IEnumerable<Circle> two)
         {
-            foreach (var c in one)
-            {
-                foreach (var d in two)
-                {
-                    if (c.Intersects(d))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return (from c in one from d in two where c.Intersects(d) select c).Any();
         }
     }
 }
