@@ -24,7 +24,7 @@ namespace Asteroids
         private readonly List<Asteroid> _asteroids = new List<Asteroid>();
         private readonly List<Projectile> _projectiles = new List<Projectile>();
         private readonly Random rand = new Random();
-        private readonly Score score = new Score();
+        private Score score = new Score();
         private Texture2D _asteroidTexture;
         private Texture2D _collisionTexture;
 
@@ -59,7 +59,6 @@ namespace Asteroids
 
         protected override void Initialize()
         {
-            _player = new Player();
             _satellite = new Satellite();
             _fireTime = TimeSpan.FromSeconds(.25f);
             _menu = new Menu();
@@ -213,17 +212,6 @@ namespace Asteroids
             _satellite.Initialize(_ufoTexture, new Vector2(50, 50));
 
             _explosionSound = Content.Load<SoundEffect>("Explosion");
-
-            var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
-                                             + GraphicsDevice.Viewport.TitleSafeArea.Width/2
-                                             ,
-                                             GraphicsDevice.Viewport.TitleSafeArea.Y
-                                             + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
-            _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
-            
-            StartWave(5);
-
-            score.Initialize(GraphicsDevice.Viewport, _scoreFont, new Vector2(0, 0));
         }
 
         protected override void UnloadContent()
@@ -472,6 +460,20 @@ namespace Asteroids
 
         public void newGame()
         {
+            _explosions.Clear();
+            _asteroids.Clear();
+            _projectiles.Clear();
+            _player = new Player();
+            var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
+                                             ,
+                                             GraphicsDevice.Viewport.TitleSafeArea.Y
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+            _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
+
+            StartWave(5);
+            score = new Score();
+            score.Initialize(GraphicsDevice.Viewport, _scoreFont, new Vector2(0, 0));
             running = true;
             _menu.MainMenuIndex = _menu.Screens.IndexOf(pause);
         }
