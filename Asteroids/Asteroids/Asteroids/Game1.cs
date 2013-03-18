@@ -65,14 +65,14 @@ namespace Asteroids
 
         private void InitMenu()
         {
-            var diff = new MenuScreen("Difficulty");
-            var start = new MenuScreen("Asteroids");
-            var options = new MenuScreen("Options");
-            var about = new MenuScreen("About");
-            var debugger = new MenuScreen("Debug");
-            pause = new MenuScreen("Paused");
-            _gameOver = new MenuScreen("Game Over");
-            var controls = new MenuScreen("Controls");
+            var start = new MenuScreen("Asteroids", null);
+            var options = new MenuScreen("Options", null);
+            var diff = new MenuScreen("Difficulty", options);
+            var debugger = new MenuScreen("Debug", options);
+            var about = new MenuScreen("About", null);
+            pause = new MenuScreen("Paused", null);
+            _gameOver = new MenuScreen("Game Over", null);
+            var controls = new MenuScreen("Controls", null);
 
             var e = new Dictionary<string, Action>
                 {

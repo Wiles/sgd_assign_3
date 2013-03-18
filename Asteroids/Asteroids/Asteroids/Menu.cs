@@ -71,16 +71,30 @@ namespace Asteroids
                 var eleSize = _font.MeasureString(text);
                 spriteBatch.DrawString(_font,
                     text,
-                    new Vector2((_viewport.Width / 2) + 2, textSize.Y * (i + 3)),
+                    new Vector2((_viewport.Width / 2) + 2, (int)(textSize.Y * (i + 2.5))),
                     Color.White, 0.0f,
                     new Vector2(eleSize.X / 2, textSize.Y / 2),
                     1.0f, SpriteEffects.None, 0.0f);
+            }
+
+            if (screen != screens[MainMenuIndex])
+            {
+                var text = (screen.selectedIndex == screen.elements.Count) ? string.Format("> {0} <", "Back") : "Back";
+                var eleSize = _font.MeasureString(text);
+                spriteBatch.DrawString(_font,
+                    text,
+                    new Vector2((_viewport.Width / 2) + 2, textSize.Y * (screen.elements.Count + 3)),
+                    Color.White, 0.0f,
+                    new Vector2(eleSize.X / 2, textSize.Y / 2),
+                    1.0f, SpriteEffects.None, 0.0f);
+                
             }
         }
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             var screen = screens[selectedMenuScreen];
+            var max = (screens[selectedMenuScreen] == screens[MainMenuIndex]) ? screen.elements.Count : screen.elements.Count + 1;
             if (input.Down())
             {
                 if(down == false)
@@ -88,7 +102,7 @@ namespace Asteroids
                     down = true;
                     _menuMove.Play();
                     screen.selectedIndex += 1;
-                    if (screen.selectedIndex >= screen.elements.Count)
+                    if (screen.selectedIndex >= max)
                     {
                         screen.selectedIndex = 0;
                     }
@@ -107,7 +121,7 @@ namespace Asteroids
                     screen.selectedIndex -= 1;
                     if (screen.selectedIndex < 0)
                     {
-                        screen.selectedIndex = screen.elements.Count - 1;
+                        screen.selectedIndex = max - 1;
                     }
                 }
             }
@@ -120,11 +134,27 @@ namespace Asteroids
                 if (enter == false)
                 {
                     enter = true;
-                    var action = screen.elements.Values.ToArray()[screen.selectedIndex];
-                    if (action != null)
+                    var actions = screen.elements.Values.ToArray();
+                    if (screen.selectedIndex == actions.Count())
                     {
                         _menuSelect.Play();
-                        action();
+                        if (screen.Parent == null)
+                        {
+                            this.selectedMenuScreen = MainMenuIndex;
+                        }
+                        else
+                        {
+                            this.selectedMenuScreen = this.screens.IndexOf(screen.Parent);
+                        }
+                    }
+                    else
+                    {
+                        var action = screen.elements.Values.ToArray()[screen.selectedIndex];
+                        if (action != null)
+                        {
+                            _menuSelect.Play();
+                            action();
+                        }
                     }
                 }
             }
