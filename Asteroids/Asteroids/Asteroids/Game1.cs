@@ -14,6 +14,8 @@ namespace Asteroids
         private bool hard;
         private bool debug;
 
+        private int _wave = 1;
+
         private MenuScreen pause;
         private MenuScreen _gameOver;
 
@@ -386,8 +388,8 @@ namespace Asteroids
                     _explosions.Add(explosion);
                     _asteroids.RemoveAt(i);
                     if(_asteroids.Count == 0){
-                        //TODO increase count with each wave
-                        StartWave(8);
+                        _wave += 1;
+                        StartWave(_wave);
                     }
                 }
             }
@@ -441,8 +443,10 @@ namespace Asteroids
             _projectiles.Add(projectile);
         }
 
-        private void StartWave(int asteroids)
+        private void StartWave(int wave)
         {
+            var asteroids = (wave + 4 < 12) ? wave + 4 : 12;
+
             for (int i = 0; i < asteroids; ++i)
             {
                 var direction = rand.NextDouble() * Math.PI * 2;
@@ -453,7 +457,11 @@ namespace Asteroids
                 y = MathHelper.Clamp((float)y, (float)0, (float)GraphicsDevice.Viewport.Height);
                 var init = rand.NextDouble() * Math.PI * 2;
                 var asteroid = new Asteroid();
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, 50.0f, 1);
+                var speed = 50.0f;
+                if(wave > 12){
+                    speed += wave - 11 * 10;
+                }
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, speed + (float)((rand.NextDouble() - .5)) * 25, 1);
                 _asteroids.Add(asteroid);
             }
         }
@@ -463,6 +471,9 @@ namespace Asteroids
             _explosions.Clear();
             _asteroids.Clear();
             _projectiles.Clear();
+
+            _wave = 1;
+
             _player = new Player();
             var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
                                              + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
@@ -471,7 +482,7 @@ namespace Asteroids
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
             _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
 
-            StartWave(5);
+            StartWave(_wave);
             score = new Score();
             score.Initialize(GraphicsDevice.Viewport, _scoreFont, new Vector2(0, 0));
             running = true;
