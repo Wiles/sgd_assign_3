@@ -49,6 +49,6 @@ namespace Asteroids
             _points += points;
         }
 
-        public int Points { get; }
+        public int Points { get { return _points; } }
     }
 }
