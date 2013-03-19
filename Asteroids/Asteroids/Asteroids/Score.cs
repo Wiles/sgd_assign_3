@@ -48,5 +48,7 @@ namespace Asteroids
         {
             _points += points;
         }
+
+        public int Points { get; }
     }
 }

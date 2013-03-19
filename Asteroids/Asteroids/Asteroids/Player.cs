@@ -17,10 +17,13 @@ namespace Asteroids
         public int Lives
         {
             get { return _lives; }
-            private set
+            set
             {
                 _lives = value;
-                LastDeath = 0;
+                if (value < 0)
+                {
+                    LastDeath = 0;
+                }
             }
         }
 

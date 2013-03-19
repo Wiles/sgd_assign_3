@@ -48,6 +48,9 @@ namespace Asteroids
 
         private Texture2D _ufoTexture;
 
+        private const long ExtraLife = 10000L;
+        private long lastExtraLife = 0L;
+
         public Game1()
         {
             new GraphicsDeviceManager(this);
@@ -370,13 +373,13 @@ namespace Asteroids
                     switch (parent.Generation)
                     {
                         case (1):
-                            _score.AddPoints(20);
+                            AddPoints(20);
                             break;
                         case (2):
-                            _score.AddPoints(50);
+                            AddPoints(50);
                             break;
                         case (3):
-                            _score.AddPoints(100);
+                            AddPoints(100);
                             break;
                     }
 
@@ -478,9 +481,9 @@ namespace Asteroids
                 var asteroid = new Asteroid();
                 var speed = 50.0f;
                 if(wave > 12){
-                    speed += wave - 11 * 10;
+                    speed += wave - 12 * 10;
                 }
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, speed + (float)((_rand.NextDouble() - .5)) * 25, 1);
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, (float)Math.Floor(speed + ((_rand.NextDouble() - .5)) * 25), 1);
                 _asteroids.Add(asteroid);
             }
         }
@@ -511,6 +514,15 @@ namespace Asteroids
         public void resume()
         {
             _running = true;
+        }
+
+        private void AddPoints(int points)
+        {
+            _score.AddPoints(points);
+            if(_score.Points - lastExtraLife > ExtraLife){
+                _player.Lives += 1;
+                lastExtraLife = _score.Points;
+            }
         }
     }
 }
