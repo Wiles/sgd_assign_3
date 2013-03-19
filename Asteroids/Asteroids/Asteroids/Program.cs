@@ -1,3 +1,11 @@
+//File:     Projectile.cs
+//Name:     Samuel Lewis (5821103)
+//Date:     2013-03-19
+//Class:    Simulation and Game Development
+//Ass:      3
+//
+//Desc:     Main 
+
 namespace Asteroids
 {
 #if WINDOWS || XBOX

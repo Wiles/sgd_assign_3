@@ -1,3 +1,17 @@
+//File:     Game1.cs
+//Name:     Samuel Lewis (5821103)
+//Date:     2013-03-19
+//Class:    Simulation and Game Development
+//Ass:      3
+//
+//Desc:     Main Game logic
+//
+//          All Graphics created by Hand
+//
+//          All sounds generated using SFXR - http://www.drpetter.se/project_sfxr.html
+//          Which is an awesome application when doing this type of game.
+//
+
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -7,6 +21,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
+    /// <summary>
+    /// Main game logic
+    /// </summary>
     public class Game1 : Game
     {
         private const float MaxSpeed = 500.0f;
@@ -50,12 +67,18 @@ namespace Asteroids
         private Texture2D _ufoTexture;
         private int _wave = 1;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Game1"/> class.
+        /// </summary>
         public Game1()
         {
             new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
+        /// <summary>
+        /// Called after the Game and GraphicsDevice are created, but before LoadContent.  Reference page contains code sample.
+        /// </summary>
         protected override void Initialize()
         {
             _enemies = new List<Satellite>();
@@ -66,6 +89,9 @@ namespace Asteroids
             base.Initialize();
         }
 
+        /// <summary>
+        /// Inits the menu.
+        /// </summary>
         private void InitMenu()
         {
             var start = new MenuScreen("Asteroids", null);
@@ -177,6 +203,9 @@ namespace Asteroids
             _menu.MainMenuIndex = _menu.Screens.IndexOf(start);
         }
 
+        /// <summary>
+        /// Loads game content into usable objects
+        /// </summary>
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -206,14 +235,34 @@ namespace Asteroids
             _explosionSound = Content.Load<SoundEffect>("Explosion");
         }
 
+        /// <summary>
+        /// Called when graphics resources need to be unloaded. Override this method to unload any game-specific graphics resources.
+        /// </summary>
         protected override void UnloadContent()
         {
+            _shootSound.Dispose();
+
+            _ufoTexture.Dispose();
+
+            _explosionSound.Dispose();
             _projectileTexture.Dispose();
-            _asteroidTexture.Dispose();
+
             _playerTexture.Dispose();
-            _spriteBatch.Dispose();
+
+            _asteroidTexture.Dispose();
+
+            _collisionTexture.Dispose();
+
+            _menuMove.Dispose();
+            _menuSelect.Dispose();
+            _menuBack.Dispose();
+            _playerExplosion.Dispose();
         }
 
+        /// <summary>
+        /// Reference page contains links to related conceptual articles.
+        /// </summary>
+        /// <param name="gameTime">Time passed since the last call to Update.</param>
         protected override void Update(GameTime gameTime)
         {
             long delta = gameTime.ElapsedGameTime.Milliseconds;
@@ -307,6 +356,9 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Updates the collisions.
+        /// </summary>
         private void UpdateCollisions()
         {
             foreach (Projectile projectile in _projectiles)
@@ -327,7 +379,7 @@ namespace Asteroids
                     }
                     else
                     {
-                        var pointsEarned = 0;
+                        int pointsEarned = 0;
                         foreach (Satellite enemy in _enemies)
                         {
                             if (projectile.GetCircle().Intersects(enemy.GetCircle()))
@@ -426,6 +478,11 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Updates the asteroids.
+        /// </summary>
+        /// <param name="delta">The delta.</param>
+        /// <param name="inputState">State of the input.</param>
         private void UpdateAsteroids(long delta, Input inputState)
         {
             for (int i = _asteroids.Count - 1; i >= 0; i--)
@@ -440,13 +497,13 @@ namespace Asteroids
                     {
                         var asteroid = new Asteroid();
                         asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position,
-                                            parent.Radians - _rand.Next(10, 30)*Math.PI/180, parent.Speed * 1.1f,
+                                            parent.Radians - _rand.Next(10, 30)*Math.PI/180, parent.Speed*1.1f,
                                             parent.Generation + 1);
                         _asteroids.Add(asteroid);
 
                         asteroid = new Asteroid();
                         asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position,
-                                            parent.Radians + _rand.Next(10, 30) * Math.PI / 180, parent.Speed * 1.1f,
+                                            parent.Radians + _rand.Next(10, 30)*Math.PI/180, parent.Speed*1.1f,
                                             parent.Generation + 1);
                         _asteroids.Add(asteroid);
                     }
@@ -471,6 +528,10 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Draws all Entities to the screen
+        /// </summary>
+        /// <param name="gameTime">Time passed since the last call to Draw.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
@@ -512,6 +573,9 @@ namespace Asteroids
             base.Draw(gameTime);
         }
 
+        /// <summary>
+        /// Adds a projectile shot by the ship.
+        /// </summary>
         private void AddProjectile()
         {
             var projectile = new Projectile();
@@ -523,6 +587,11 @@ namespace Asteroids
             _projectiles.Add(projectile);
         }
 
+        /// <summary>
+        /// Starts the wave of asteroids.
+        /// The higher the wave number the harder the wave will be
+        /// </summary>
+        /// <param name="wave">The wave.</param>
         private void StartWave(int wave)
         {
             int asteroids = (wave + 4 < 12) ? wave + 4 : 12;
@@ -548,6 +617,9 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Starts a new game reseting the state to be clean
+        /// </summary>
         private void NewGame()
         {
             _explosions.Clear();
@@ -571,6 +643,10 @@ namespace Asteroids
             _menu.MainMenuIndex = _menu.Screens.IndexOf(_pause);
         }
 
+        /// <summary>
+        /// Adds points onto the players score and handles score based events
+        /// </summary>
+        /// <param name="points">The points.</param>
         private void AddPoints(int points)
         {
             _score.AddPoints(points);
@@ -598,6 +674,9 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Start a new life for the player
+        /// </summary>
         private void NewLife()
         {
             var explosion = new Explosion

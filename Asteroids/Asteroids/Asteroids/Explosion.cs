@@ -1,4 +1,12 @@
-﻿using System;
+﻿//File:     Explosion.cs
+//Name:     Samuel Lewis (5821103)
+//Date:     2013-03-19
+//Class:    Simulation and Game Development
+//Ass:      3
+//
+//Desc:     Entity used to animate an explosion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -53,7 +61,8 @@ namespace Asteroids
                         position,
                         rec, //source
                         Color.White,
-                        (float)(((_elapsedTime / 10000.0) * (((x + y) % 2 == 0) ? MathHelper.TwoPi : -MathHelper.TwoPi))),//rotation
+                        (float) (((_elapsedTime/10000.0)*(((x + y)%2 == 0) ? MathHelper.TwoPi : -MathHelper.TwoPi))),
+                        //rotation
                         new Vector2((float) (width/2.0), (float) (height/2.0)), //origin
                         Scale,
                         SpriteEffects.None,

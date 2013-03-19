@@ -1,4 +1,12 @@
-﻿using System;
+﻿//File:     Menu.cs
+//Name:     Samuel Lewis (5821103)
+//Date:     2013-03-19
+//Class:    Simulation and Game Development
+//Ass:      3
+//
+//Desc:     Entity used to draw the menu
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -7,6 +15,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
+    /// <summary>
+    /// Draws the menu and handles navigation
+    /// </summary>
     internal class Menu : IEntity
     {
         private bool _down;
@@ -20,29 +31,62 @@ namespace Asteroids
         private bool _up;
         private Viewport _viewport;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Menu"/> class.
+        /// </summary>
         public Menu()
         {
             Screens = new List<MenuScreen>();
         }
 
+        /// <summary>
+        /// Gets or sets the selected menu screen.
+        /// </summary>
+        /// <value>
+        /// The selected menu screen.
+        /// </value>
         public int SelectedMenuScreen { get; set; }
 
+        /// <summary>
+        /// Gets or sets the index of the main menu.
+        /// </summary>
+        /// <value>
+        /// The index of the main menu.
+        /// </value>
         public int MainMenuIndex { get; set; }
 
+        /// <summary>
+        /// Gets the screens.
+        /// </summary>
+        /// <value>
+        /// The screens.
+        /// </value>
         public List<MenuScreen> Screens { get; private set; }
 
         #region IEntity Members
 
+        /// <summary>
+        /// Gets the circle for rough collision detections.
+        /// </summary>
+        /// <returns></returns>
         public Circle GetCircle()
         {
             return new Circle(Vector2.Zero, 0);
         }
 
+        /// <summary>
+        /// Gets the circles used to fine collision detection.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Circle> GetCircles()
         {
             return new[] {GetCircle()};
         }
 
+        /// <summary>
+        /// Draws the Entity.
+        /// </summary>
+        /// <param name="spriteBatch">The sprite batch.</param>
         public void Draw(SpriteBatch spriteBatch)
         {
             MenuScreen screen = Screens[SelectedMenuScreen];
@@ -82,6 +126,12 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Updates the Entity.
+        /// </summary>
+        /// <param name="graphics">The graphics.</param>
+        /// <param name="input">The input.</param>
+        /// <param name="delta">The delta.</param>
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             MenuScreen screen = Screens[SelectedMenuScreen];
@@ -175,6 +225,14 @@ namespace Asteroids
 
         #endregion
 
+        /// <summary>
+        /// Initializes the specified viewport.
+        /// </summary>
+        /// <param name="viewport">The viewport.</param>
+        /// <param name="font">The font.</param>
+        /// <param name="move">The move.</param>
+        /// <param name="select">The select.</param>
+        /// <param name="back">The back.</param>
         public void Initialize(Viewport viewport, SpriteFont font, SoundEffect move, SoundEffect select,
                                SoundEffect back)
         {
@@ -185,6 +243,10 @@ namespace Asteroids
             _menuBack = back;
         }
 
+        /// <summary>
+        /// Adds the menu screen.
+        /// </summary>
+        /// <param name="screen">The screen.</param>
         public void AddMenuScreen(MenuScreen screen)
         {
             Screens.Add(screen);
