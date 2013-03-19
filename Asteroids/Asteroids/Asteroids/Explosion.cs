@@ -13,7 +13,7 @@ namespace Asteroids
 
         public bool Active { get; set; }
         public Vector2 Position { get; set; }
-        public double Speed { get; set; }
+        public Vector2 Velocity { get; set; }
         public double Direction { get; set; }
         public Texture2D Texture { get; set; }
         public float Scale { get; set; }
@@ -67,8 +67,7 @@ namespace Asteroids
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
-            Position += new Vector2((float) (Speed*(delta/1000.0)*Math.Cos(Direction)),
-                                    (float) (Speed*(delta/1000.0)*Math.Sin(Direction)));
+            Position += Velocity;
 
             _elapsedTime += delta;
             if (_elapsedTime > 1000)

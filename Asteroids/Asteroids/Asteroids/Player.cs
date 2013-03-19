@@ -8,52 +8,26 @@ namespace Asteroids
     internal class Player : IEntity
     {
         private int _lives;
-        private double _speed;
         private Viewport _viewport;
         public Texture2D Texture { get; private set; }
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double MaxSpeed { get; set; }
-        public double RadPerSecond { get; set; }
-        public double AccelerationPerSecond { get; set; }
+        public Vector2 Position { get; private set; }
+        private double RadPerSecond { get; set; }
+        private double AccelerationPerSecond { get; set; }
 
         public int Lives
         {
             get { return _lives; }
-            set
+            private set
             {
                 _lives = value;
                 LastDeath = 0;
             }
         }
 
-        public long LastDeath { get; set; }
+        private long LastDeath { get; set; }
 
-        public double Speed
-        {
-            get { return _speed; }
-            set
-            {
-                if (value <= 0)
-                {
-                    _speed = 0;
-                }
-                else if (value > MaxSpeed)
-                {
-                    _speed = MaxSpeed;
-                }
-                else
-                {
-                    _speed = value;
-                }
-            }
-        }
-
-        public Vector2 Position
-        {
-            get { return new Vector2((int) X, (int) Y); }
-        }
-
+        public Vector2 Velocity { get; private set; }
+        
         public int Width
         {
             get { return Texture.Width; }
@@ -64,14 +38,14 @@ namespace Asteroids
             get { return Texture.Height; }
         }
 
-        public double Angle { get; set; }
+        public double Angle { get; private set; }
 
         #region IEntity Members
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             LastDeath += delta;
-            double percent = delta/1000.0;
+            var percent = delta/1000.0;
             if (input.Left())
             {
                 Angle -= RadPerSecond*percent;
@@ -82,32 +56,34 @@ namespace Asteroids
             }
             if (input.Thrusters())
             {
-                Speed += AccelerationPerSecond*percent;
+                Velocity += new Vector2(
+                    (float) (Math.Cos(Angle) * AccelerationPerSecond * percent),
+                    (float) (Math.Sin(Angle) * AccelerationPerSecond * percent));
             }
             else
             {
-                Speed -= AccelerationPerSecond*percent;
+                var length = Velocity.Length();
+
+                Velocity = new Vector2((float) (Velocity.X *  .99), (float) (Velocity.Y * .99));
             }
 
+            Position += Velocity;
 
-            Y += Speed*percent*Math.Sin(Angle);
-            X += Speed*percent*Math.Cos(Angle);
-
-            if (X > graphics.Viewport.Width + Width)
+            if (Position.X > graphics.Viewport.Width + Width)
             {
-                X = -Width + 1;
+                Position = new Vector2(-Width + 1, Position.Y);
             }
-            else if (X < -Width)
+            else if (Position.X < -Width)
             {
-                X = graphics.Viewport.Width + Width;
+                Position = new Vector2(graphics.Viewport.Width + Width, Position.Y);
             }
-            if (Y > graphics.Viewport.Height + Height)
+            if (Position.Y > graphics.Viewport.Height + Height)
             {
-                Y = -Height + 1;
+                Position = new Vector2(Position.X, -Height + 1);
             }
-            else if (Y < -Height)
+            else if (Position.Y < -Height)
             {
-                Y = graphics.Viewport.Height + Height;
+                Position = new Vector2(Position.X, graphics.Viewport.Height + Height);
             }
         }
 
@@ -117,8 +93,8 @@ namespace Asteroids
             {
                 return new Circle(0, 0, 0);
             }
-            return new Circle(X,
-                              Y,
+            return new Circle(Position.X,
+                              Position.Y,
                               (Width/2.0)*1.25);
         }
 
@@ -147,34 +123,32 @@ namespace Asteroids
         {
             return new[]
                 {
-                    new Circle(X, Y, Width/3.0),
-                    new Circle(X + Width/3.0*Math.Cos(Angle), Y + Width/3.0*Math.Sin(Angle), Width/10.0),
-                    new Circle(X + Width/2.5*Math.Cos(Angle), Y + Width/2.5*Math.Sin(Angle), Width/15.0),
-                    new Circle(X + Width/3.0*Math.Cos(Angle + MathHelper.ToRadians(135)),
-                               Y + Width/3.0*Math.Sin(Angle + MathHelper.ToRadians(135)), Width/7.0),
-                    new Circle(X + Width/2.5*Math.Cos(Angle + MathHelper.ToRadians(135)),
-                               Y + Width/2.5*Math.Sin(Angle + MathHelper.ToRadians(135)), Width/6.0),
-                    new Circle(X + Width/2.0*Math.Cos(Angle + MathHelper.ToRadians(135)),
-                               Y + Width/2.0*Math.Sin(Angle + MathHelper.ToRadians(135)), Width/9.0),
-                    new Circle(X + Width/3.0*Math.Cos(Angle + MathHelper.ToRadians(-135)),
-                               Y + Width/3.0*Math.Sin(Angle + MathHelper.ToRadians(-135)), Width/7.0),
-                    new Circle(X + Width/2.5*Math.Cos(Angle + MathHelper.ToRadians(-135)),
-                               Y + Width/2.5*Math.Sin(Angle + MathHelper.ToRadians(-135)), Width/6.0),
-                    new Circle(X + Width/2.0*Math.Cos(Angle + MathHelper.ToRadians(-135)),
-                               Y + Width/2.0*Math.Sin(Angle + MathHelper.ToRadians(-135)), Width/9.0)
+                    new Circle(Position.X, Position.Y, Width/3.0),
+                    new Circle(Position.X + Width/3.0*Math.Cos(Angle), Position.Y + Width/3.0*Math.Sin(Angle), Width/10.0),
+                    new Circle(Position.X + Width/2.5*Math.Cos(Angle), Position.Y + Width/2.5*Math.Sin(Angle), Width/15.0),
+                    new Circle(Position.X + Width/3.0*Math.Cos(Angle + MathHelper.ToRadians(135)),
+                               Position.Y + Width/3.0*Math.Sin(Angle + MathHelper.ToRadians(135)), Width/7.0),
+                    new Circle(Position.X + Width/2.5*Math.Cos(Angle + MathHelper.ToRadians(135)),
+                               Position.Y + Width/2.5*Math.Sin(Angle + MathHelper.ToRadians(135)), Width/6.0),
+                    new Circle(Position.X + Width/2.0*Math.Cos(Angle + MathHelper.ToRadians(135)),
+                               Position.Y + Width/2.0*Math.Sin(Angle + MathHelper.ToRadians(135)), Width/9.0),
+                    new Circle(Position.X + Width/3.0*Math.Cos(Angle + MathHelper.ToRadians(-135)),
+                               Position.Y + Width/3.0*Math.Sin(Angle + MathHelper.ToRadians(-135)), Width/7.0),
+                    new Circle(Position.X + Width/2.5*Math.Cos(Angle + MathHelper.ToRadians(-135)),
+                               Position.Y + Width/2.5*Math.Sin(Angle + MathHelper.ToRadians(-135)), Width/6.0),
+                    new Circle(Position.X + Width/2.0*Math.Cos(Angle + MathHelper.ToRadians(-135)),
+                               Position.Y + Width/2.0*Math.Sin(Angle + MathHelper.ToRadians(-135)), Width/9.0)
                 };
         }
 
         #endregion
 
-        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, float maxSpeed, int lives)
+        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, int lives)
         {
-            MaxSpeed = maxSpeed;
-            RadPerSecond = Math.PI*2;
-            AccelerationPerSecond = 100;
+            RadPerSecond = MathHelper.TwoPi;
+            AccelerationPerSecond = 5;
             Angle = MathHelper.ToRadians(-90);
-            X = position.X;
-            Y = position.Y;
+            Position = position;
             Texture = texture;
             Lives = lives;
             _viewport = viewport;

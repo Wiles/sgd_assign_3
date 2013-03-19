@@ -209,7 +209,6 @@ namespace Asteroids
 
             _asteroidTexture = Content.Load<Texture2D>("Asteroid");
 
-            //Don't set this if you don't want to draw the hitboxes
             _collisionTexture = Content.Load<Texture2D>("Collision");
 
             _scoreFont = Content.Load<SpriteFont>("Mono");
@@ -322,7 +321,6 @@ namespace Asteroids
                 if (asteroid.GetCircle().Intersects(_player.GetCircle())
                     && Circle.Intersects(asteroid.GetCircles(), _player.GetCircles()))
                 {
-                    _player.Lives -= 1;
                     _playerExplosion.Play();
                     var explosion = new Explosion
                         {
@@ -333,16 +331,18 @@ namespace Asteroids
                                 new Vector2((float) (_player.Width/2.0), (float) (_player.Height/2.0)),
                             Scale = 1.0f,
                             Texture = _player.Texture,
-                            Speed = _player.Speed
+                            Velocity = _player.Velocity
                         };
 
                     _explosions.Add(explosion);
-                    _player.X = GraphicsDevice.Viewport.TitleSafeArea.X
-                                + GraphicsDevice.Viewport.TitleSafeArea.Width/2;
-                    _player.Y = GraphicsDevice.Viewport.TitleSafeArea.Y
-                                + GraphicsDevice.Viewport.TitleSafeArea.Height/2;
-                    _player.Angle = MathHelper.ToRadians(-90);
-                    _player.Speed = 0;
+                    var lives = _player.Lives - 1;
+                    _player = new Player();
+                    var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
+                                                     + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
+                                                     ,
+                                                     GraphicsDevice.Viewport.TitleSafeArea.Y
+                                                     + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+                    _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, lives);
                     if (_player.Lives < 0)
                     {
                         _running = false;
@@ -398,7 +398,7 @@ namespace Asteroids
                                 parent.Position - new Vector2((float) (parent.Width/2.0), (float) (parent.Height/2.0)),
                             Scale = (float) parent.Scale,
                             Texture = parent.Texture,
-                            Speed = parent.Speed
+                            Velocity = new Vector2()//TODO
                         };
                     _explosions.Add(explosion);
                     _asteroids.RemoveAt(i);
@@ -488,7 +488,7 @@ namespace Asteroids
                                              ,
                                              GraphicsDevice.Viewport.TitleSafeArea.Y
                                              + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
-            _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, MaxSpeed, 3);
+            _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, 3);
 
             StartWave(5);
             _score = new Score();
