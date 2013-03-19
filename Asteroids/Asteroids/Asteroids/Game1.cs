@@ -25,9 +25,9 @@ namespace Asteroids
         private bool _debug;
         private SoundEffect _explosionSound;
         private List<Explosion> _explosions;
+        private List<Satellite> _enemies;
 
         private TimeSpan _fireTime;
-        private bool _hard;
         private long _lastFire;
         private SoundEffect _menuBack;
         private SoundEffect _menuMove;
@@ -39,7 +39,6 @@ namespace Asteroids
 
         private Texture2D _projectileTexture;
         private bool _running;
-        private Satellite _satellite;
         private Score _score = new Score();
         private SpriteFont _scoreFont;
 
@@ -51,6 +50,11 @@ namespace Asteroids
         private const long ExtraLife = 10000L;
         private long lastExtraLife = 0L;
 
+        private const long UFO = 50;
+        private long lastUFO = 0;
+        private long UFOCount = 0;
+        private const long SmallUfo = 3;
+        
         public Game1()
         {
             new GraphicsDeviceManager(this);
@@ -59,7 +63,7 @@ namespace Asteroids
 
         protected override void Initialize()
         {
-            _satellite = new Satellite();
+            _enemies = new List<Satellite>();
             _fireTime = TimeSpan.FromSeconds(.25f);
             _menu = new Menu();
             _explosions = new List<Explosion>();
@@ -71,34 +75,14 @@ namespace Asteroids
         {
             var start = new MenuScreen("Asteroids", null);
             var options = new MenuScreen("Options", null);
-            var diff = new MenuScreen("Difficulty", options);
             var debugger = new MenuScreen("Debug", options);
             var about = new MenuScreen("About", null);
             _pause = new MenuScreen("Paused", null);
             _gameOver = new MenuScreen("Game Over", null);
             var controls = new MenuScreen("Controls", null);
+            
 
             var e = new Dictionary<string, Action>
-                {
-                    {
-                        "Hard", () =>
-                            {
-                                _hard = true;
-                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);
-                            }
-                    },
-                    {
-                        "Easy", () =>
-                            {
-                                _hard = false;
-                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(options);
-                            }
-                    }
-                };
-            diff.Elements = e;
-
-
-            e = new Dictionary<string, Action>
                 {
                     {
                         "On", () =>
@@ -168,13 +152,6 @@ namespace Asteroids
                                 debugger.SelectedIndex = _debug ? 0 : 1;
                                 _menu.SelectedMenuScreen = _menu.Screens.IndexOf(debugger);
                             }
-                    },
-                    {
-                        "Difficulty", () =>
-                            {
-                                diff.SelectedIndex = _hard ? 0 : 1;
-                                _menu.SelectedMenuScreen = _menu.Screens.IndexOf(diff);
-                            }
                     }
                 };
 
@@ -194,7 +171,6 @@ namespace Asteroids
             controls.Elements = e;
 
             _menu.AddMenuScreen(start);
-            _menu.AddMenuScreen(diff);
             _menu.AddMenuScreen(_gameOver);
             _menu.AddMenuScreen(options);
             _menu.AddMenuScreen(debugger);
@@ -231,7 +207,6 @@ namespace Asteroids
             _shootSound = Content.Load<SoundEffect>("Shoot");
 
             _ufoTexture = Content.Load<Texture2D>("UFO");
-            _satellite.Initialize(_ufoTexture, new Vector2(50, 50));
 
             _explosionSound = Content.Load<SoundEffect>("Explosion");
         }
@@ -292,6 +267,39 @@ namespace Asteroids
                         _explosions.RemoveAt(i);
                     }
                 }
+
+                for (int i = _enemies.Count - 1; i >= 0; i--)
+                {
+                    _enemies[i].Update(GraphicsDevice, inputState, delta);
+
+                    if (_enemies[i].Active == false)
+                    {
+                        _enemies.RemoveAt(i);
+                    }
+                    else
+                    {
+                        if (_enemies[i].LastFired > _fireTime.Milliseconds)
+                        {
+                            _enemies[i].LastFired = 0;
+                            var angle = 0.0;
+                            if (_enemies[i].Accurate)
+                            {
+                                angle = Math.Atan2(_player.Position.Y - _enemies[i].Position.Y, _player.Position.X - _enemies[i].Position.X);
+                            }
+                            else
+                            {
+                                angle = _rand.NextDouble() * MathHelper.TwoPi;
+                            }
+
+                            var position = _enemies[i].Position + new Vector2((float)(32 * Math.Cos(angle)), (float)(32 * Math.Sin(angle)));
+
+                            var projectile = new Projectile();
+                            projectile.Initialize(GraphicsDevice.Viewport, _projectileTexture, position, angle, ProjectileMoveSpeed, true);
+                            _projectiles.Add(projectile);
+                        }
+                    }
+                }
+
                 UpdateAsteroids(delta, inputState);
                 base.Update(gameTime);
             }
@@ -315,6 +323,21 @@ namespace Asteroids
                             {
                                 asteroid.Active = false;
                                 projectile.Active = false;
+                                if (projectile.Hostile == false)
+                                {
+                                    switch (asteroid.Generation)
+                                    {
+                                        case (1):
+                                            AddPoints(20);
+                                            break;
+                                        case (2):
+                                            AddPoints(50);
+                                            break;
+                                        case (3):
+                                            AddPoints(100);
+                                            break;
+                                    }
+                                }
                                 _explosionSound.Play();
                                 break;
                             }
@@ -370,19 +393,6 @@ namespace Asteroids
                 {
                     Asteroid parent = _asteroids[i];
 
-                    switch (parent.Generation)
-                    {
-                        case (1):
-                            AddPoints(20);
-                            break;
-                        case (2):
-                            AddPoints(50);
-                            break;
-                        case (3):
-                            AddPoints(100);
-                            break;
-                    }
-
                     if (parent.Generation <= 2)
                     {
                         var asteroid = new Asteroid();
@@ -426,7 +436,6 @@ namespace Asteroids
 
             if (_running)
             {
-                _satellite.Draw(_spriteBatch);
                 _player.Draw(_spriteBatch);
 
                 foreach (Projectile t in _projectiles)
@@ -442,6 +451,11 @@ namespace Asteroids
                 foreach (Explosion explosion in _explosions)
                 {
                     explosion.Draw(_spriteBatch);
+                }
+
+                foreach (Satellite satellite in _enemies)
+                {
+                    satellite.Draw(_spriteBatch);
                 }
 
                 _score.Draw(_spriteBatch);
@@ -461,7 +475,7 @@ namespace Asteroids
             double angle = _player.Angle;
             pos.X = _player.Position.X + (int) (_playerTexture.Width/2.0*Math.Cos(angle));
             pos.Y = _player.Position.Y + (int) (_playerTexture.Height/2.0*Math.Sin(angle));
-            projectile.Initialize(GraphicsDevice.Viewport, _projectileTexture, pos, angle, ProjectileMoveSpeed);
+            projectile.Initialize(GraphicsDevice.Viewport, _projectileTexture, pos, angle, ProjectileMoveSpeed, false);
             _projectiles.Add(projectile);
         }
 
@@ -522,6 +536,20 @@ namespace Asteroids
             if(_score.Points - lastExtraLife > ExtraLife){
                 _player.Lives += 1;
                 lastExtraLife = _score.Points;
+            }
+            if(_score.Points - lastUFO > UFO){
+                lastUFO = _score.Points;
+                UFOCount += 1;
+                var ufo = new Satellite();
+                if (UFOCount % SmallUfo == 0)
+                {
+                    ufo.Initialize(_ufoTexture, new Vector2(-50, _rand.Next(50, GraphicsDevice.Viewport.Height - 50)), true, .5);
+                }
+                else
+                {
+                    ufo.Initialize(_ufoTexture, new Vector2(-50, _rand.Next(50, GraphicsDevice.Viewport.Height - 50)), false, 1.0);
+                }
+                _enemies.Add(ufo);
             }
         }
     }

@@ -17,6 +17,8 @@ namespace Asteroids
 
         private Viewport _viewport;
 
+        public bool Hostile { get; private set; }
+
         private int Width
         {
             get { return _texture.Width; }
@@ -77,12 +79,12 @@ namespace Asteroids
 
         #endregion
 
-        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed)
+        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed, bool hostile)
         {
             _texture = texture;
             _position = position;
             _viewport = viewport;
-
+            Hostile = hostile;
             Active = true;
 
             _projectileMoveSpeed = speed;
