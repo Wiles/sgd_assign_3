@@ -11,6 +11,11 @@ namespace Asteroids
         private int _points;
         private Vector2 _position;
 
+        public int Points
+        {
+            get { return _points; }
+        }
+
         #region IEntity Members
 
         public void Draw(SpriteBatch spriteBatch)
@@ -48,7 +53,5 @@ namespace Asteroids
         {
             _points += points;
         }
-
-        public int Points { get { return _points; } }
     }
 }

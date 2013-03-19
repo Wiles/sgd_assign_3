@@ -16,8 +16,8 @@ namespace Asteroids
 
         public static Texture2D Texture { get; set; }
 
-        public Vector2 Position { get; private set; }
-        public double Radius { get; set; }
+        private Vector2 Position { get; set; }
+        private double Radius { get; set; }
 
         public bool Intersects(Circle that)
         {
@@ -37,7 +37,7 @@ namespace Asteroids
             {
                 spriteBatch.Draw(
                     Texture,
-                    new Vector2((float)Position.X, (float)Position.Y),
+                    new Vector2(Position.X, Position.Y),
                     null,
                     Color.White,
                     0f,

@@ -9,26 +9,27 @@ namespace Asteroids
 {
     public class Game1 : Game
     {
-        private int _wave = 1;
-
-        private MenuScreen _gameOver;
-
-        private Menu _menu;
-
         private const float MaxSpeed = 500.0f;
         private const float ProjectileMoveSpeed = MaxSpeed + 1;
+        private const long ExtraLife = 10000L;
+        private const long Ufo = 50;
+        private const long SmallUfo = 3;
         private readonly List<Asteroid> _asteroids = new List<Asteroid>();
         private readonly List<Projectile> _projectiles = new List<Projectile>();
         private readonly Random _rand = new Random();
         private Texture2D _asteroidTexture;
         private Texture2D _collisionTexture;
         private bool _debug;
+        private List<Satellite> _enemies;
         private SoundEffect _explosionSound;
         private List<Explosion> _explosions;
-        private List<Satellite> _enemies;
 
         private TimeSpan _fireTime;
+        private MenuScreen _gameOver;
+        private long _lastExtraLife;
         private long _lastFire;
+        private long _lastUfo;
+        private Menu _menu;
         private SoundEffect _menuBack;
         private SoundEffect _menuMove;
         private SoundEffect _menuSelect;
@@ -45,16 +46,10 @@ namespace Asteroids
         private SoundEffect _shootSound;
         private SpriteBatch _spriteBatch;
 
+        private long _ufoCount;
         private Texture2D _ufoTexture;
+        private int _wave = 1;
 
-        private const long ExtraLife = 10000L;
-        private long lastExtraLife = 0L;
-
-        private const long UFO = 50;
-        private long lastUFO = 0;
-        private long UFOCount = 0;
-        private const long SmallUfo = 3;
-        
         public Game1()
         {
             new GraphicsDeviceManager(this);
@@ -80,7 +75,7 @@ namespace Asteroids
             _pause = new MenuScreen("Paused", null);
             _gameOver = new MenuScreen("Game Over", null);
             var controls = new MenuScreen("Controls", null);
-            
+
 
             var e = new Dictionary<string, Action>
                 {
@@ -281,20 +276,23 @@ namespace Asteroids
                         if (_enemies[i].LastFired > _fireTime.Milliseconds)
                         {
                             _enemies[i].LastFired = 0;
-                            var angle = 0.0;
+                            double angle;
                             if (_enemies[i].Accurate)
                             {
-                                angle = Math.Atan2(_player.Position.Y - _enemies[i].Position.Y, _player.Position.X - _enemies[i].Position.X);
+                                angle = Math.Atan2(_player.Position.Y - _enemies[i].Position.Y,
+                                                   _player.Position.X - _enemies[i].Position.X);
                             }
                             else
                             {
-                                angle = _rand.NextDouble() * MathHelper.TwoPi;
+                                angle = _rand.NextDouble()*MathHelper.TwoPi;
                             }
 
-                            var position = _enemies[i].Position + new Vector2((float)(32 * Math.Cos(angle)), (float)(32 * Math.Sin(angle)));
+                            Vector2 position = _enemies[i].Position +
+                                               new Vector2((float) (32*Math.Cos(angle)), (float) (32*Math.Sin(angle)));
 
                             var projectile = new Projectile();
-                            projectile.Initialize(GraphicsDevice.Viewport, _projectileTexture, position, angle, ProjectileMoveSpeed, true);
+                            projectile.Initialize(GraphicsDevice.Viewport, _projectileTexture, position, angle,
+                                                  ProjectileMoveSpeed, true);
                             _projectiles.Add(projectile);
                         }
                     }
@@ -322,14 +320,14 @@ namespace Asteroids
                             if (Circle.Intersects(projectile.GetCircles(), _player.GetCircles()))
                             {
                                 projectile.Active = false;
-                                newLife();
+                                NewLife();
                                 break;
                             }
                         }
                     }
                     else
                     {
-                        foreach (var enemy in _enemies)
+                        foreach (Satellite enemy in _enemies)
                         {
                             if (projectile.GetCircle().Intersects(enemy.GetCircle()))
                             {
@@ -338,23 +336,22 @@ namespace Asteroids
                                     if (enemy.Accurate)
                                     {
                                         //TODO fix this
-                                       // AddPoints(1000);
+                                        // AddPoints(1000);
                                     }
                                     else
                                     {
-                                       // AddPoints(200);
+                                        // AddPoints(200);
                                     }
                                     enemy.Active = false;
                                     projectile.Active = false;
                                     var explosion = new Explosion
-                                    {
-                                        Active = true,
-                                        Direction = 0,
-                                        Position = enemy.Position,
-                                        Scale = (float)enemy.Scale,
-                                        Texture = _ufoTexture,
-                                        Velocity = new Vector2(2, 0)
-                                    };
+                                        {
+                                            Active = true,
+                                            Position = enemy.Position,
+                                            Scale = (float) enemy.Scale,
+                                            Texture = _ufoTexture,
+                                            Velocity = new Vector2(2, 0)
+                                        };
                                     _explosions.Add(explosion);
                                 }
                             }
@@ -398,27 +395,26 @@ namespace Asteroids
                 if (asteroid.GetCircle().Intersects(_player.GetCircle())
                     && Circle.Intersects(asteroid.GetCircles(), _player.GetCircles()))
                 {
-                    newLife();
+                    NewLife();
                 }
             }
 
-            foreach(Satellite ufo in _enemies)
+            foreach (Satellite ufo in _enemies)
             {
-                if(ufo.GetCircle().Intersects(_player.GetCircle()))
+                if (ufo.GetCircle().Intersects(_player.GetCircle()))
                 {
-                    if(Circle.Intersects(ufo.GetCircles(), _player.GetCircles()))
+                    if (Circle.Intersects(ufo.GetCircles(), _player.GetCircles()))
                     {
-                        newLife();
+                        NewLife();
                         ufo.Active = false;
                         var explosion = new Explosion
-                        {
-                            Active = true,
-                            Direction = 0,
-                            Position = ufo.Position,
-                            Scale = (float)ufo.Scale,
-                            Texture = _ufoTexture,
-                            Velocity = new Vector2(2, 0)
-                        };
+                            {
+                                Active = true,
+                                Position = ufo.Position,
+                                Scale = (float) ufo.Scale,
+                                Texture = _ufoTexture,
+                                Velocity = new Vector2(2, 0)
+                            };
                         _explosions.Add(explosion);
                     }
                 }
@@ -452,16 +448,16 @@ namespace Asteroids
                     var explosion = new Explosion
                         {
                             Active = true,
-                            Direction = parent.Radians,
                             Position =
                                 parent.Position - new Vector2((float) (parent.Width/2.0), (float) (parent.Height/2.0)),
                             Scale = (float) parent.Scale,
                             Texture = parent.Texture,
-                            Velocity = new Vector2()//TODO
+                            Velocity = new Vector2() //TODO
                         };
                     _explosions.Add(explosion);
                     _asteroids.RemoveAt(i);
-                    if(_asteroids.Count == 0){
+                    if (_asteroids.Count == 0)
+                    {
                         _wave += 1;
                         StartWave(_wave);
                     }
@@ -523,7 +519,7 @@ namespace Asteroids
 
         private void StartWave(int wave)
         {
-            var asteroids = (wave + 4 < 12) ? wave + 4 : 12;
+            int asteroids = (wave + 4 < 12) ? wave + 4 : 12;
 
             for (int i = 0; i < asteroids; ++i)
             {
@@ -535,11 +531,13 @@ namespace Asteroids
                 y = MathHelper.Clamp((float) y, 0, GraphicsDevice.Viewport.Height);
                 double init = _rand.NextDouble()*Math.PI*2;
                 var asteroid = new Asteroid();
-                var speed = 50.0f;
-                if(wave > 12){
-                    speed += wave - 12 * 10;
+                float speed = 50.0f;
+                if (wave > 12)
+                {
+                    speed += wave - 12*10;
                 }
-                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int)x, (int)y), init, (float)Math.Floor(speed + ((_rand.NextDouble() - .5)) * 25), 1);
+                asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, new Vector2((int) x, (int) y), init,
+                                    (float) Math.Floor(speed + ((_rand.NextDouble() - .5))*25), 1);
                 _asteroids.Add(asteroid);
             }
         }
@@ -562,62 +560,60 @@ namespace Asteroids
 
             StartWave(_wave);
             _score = new Score();
-            _score.Initialize( _scoreFont, new Vector2(0, 0));
+            _score.Initialize(_scoreFont, new Vector2(0, 0));
             _running = true;
             _menu.MainMenuIndex = _menu.Screens.IndexOf(_pause);
-        }
-
-        public void resume()
-        {
-            _running = true;
         }
 
         private void AddPoints(int points)
         {
             _score.AddPoints(points);
-            if(_score.Points - lastExtraLife > ExtraLife){
+            if (_score.Points - _lastExtraLife > ExtraLife)
+            {
                 _player.Lives += 1;
-                lastExtraLife = _score.Points;
+                _lastExtraLife = _score.Points;
             }
-            if(_score.Points - lastUFO > UFO){
-                lastUFO = _score.Points;
-                UFOCount += 1;
+            if (_score.Points - _lastUfo > Ufo)
+            {
+                _lastUfo = _score.Points;
+                _ufoCount += 1;
                 var ufo = new Satellite();
-                if (UFOCount % SmallUfo == 0)
+                if (_ufoCount%SmallUfo == 0)
                 {
-                    ufo.Initialize(_ufoTexture, new Vector2(-50, _rand.Next(50, GraphicsDevice.Viewport.Height - 50)), true, .5);
+                    ufo.Initialize(_ufoTexture, new Vector2(-50, _rand.Next(50, GraphicsDevice.Viewport.Height - 50)),
+                                   true, .5);
                 }
                 else
                 {
-                    ufo.Initialize(_ufoTexture, new Vector2(-50, _rand.Next(50, GraphicsDevice.Viewport.Height - 50)), false, 1.0);
+                    ufo.Initialize(_ufoTexture, new Vector2(-50, _rand.Next(50, GraphicsDevice.Viewport.Height - 50)),
+                                   false, 1.0);
                 }
                 _enemies.Add(ufo);
             }
         }
 
-        private void newLife()
+        private void NewLife()
         {
             _playerExplosion.Play();
             var explosion = new Explosion
-            {
-                Active = true,
-                Direction = _player.Angle,
-                Position =
-                    _player.Position -
-                    new Vector2((float)(_player.Width / 2.0), (float)(_player.Height / 2.0)),
-                Scale = 1.0f,
-                Texture = _player.Texture,
-                Velocity = _player.Velocity
-            };
+                {
+                    Active = true,
+                    Position =
+                        _player.Position -
+                        new Vector2((float) (_player.Width/2.0), (float) (_player.Height/2.0)),
+                    Scale = 1.0f,
+                    Texture = _player.Texture,
+                    Velocity = _player.Velocity
+                };
 
             _explosions.Add(explosion);
-            var lives = _player.Lives - 1;
+            int lives = _player.Lives - 1;
             _player = new Player();
             var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
-                                             + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Width/2
                                              ,
                                              GraphicsDevice.Viewport.TitleSafeArea.Y
-                                             + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Height/2);
             _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, lives);
             if (_player.Lives < 0)
             {

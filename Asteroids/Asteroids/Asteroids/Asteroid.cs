@@ -48,8 +48,8 @@ namespace Asteroids
         {
             var change = (float) (_projectileMoveSpeed*delta/1000.0);
             Position.X += change;
-            var x = Position.X + change*Math.Cos(_radians);
-            var y = Position.Y + change * Math.Sin(_radians);
+            double x = Position.X + change*Math.Cos(_radians);
+            double y = Position.Y + change*Math.Sin(_radians);
             if (x > _viewport.Width + Texture.Width)
                 x = -Texture.Width + 1;
             else if (x < -Texture.Width)
@@ -59,7 +59,7 @@ namespace Asteroids
             else if (y > _viewport.Height + Texture.Height)
                 y = -Height + 1;
 
-            Position = new Vector2((float) x,(float) y);
+            Position = new Vector2((float) x, (float) y);
         }
 
         public void Draw(SpriteBatch spriteBatch)

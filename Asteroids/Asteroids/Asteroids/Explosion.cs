@@ -14,7 +14,6 @@ namespace Asteroids
         public bool Active { get; set; }
         public Vector2 Position { get; set; }
         public Vector2 Velocity { get; set; }
-        public double Direction { get; set; }
         public Texture2D Texture { get; set; }
         public float Scale { get; set; }
 
@@ -54,7 +53,8 @@ namespace Asteroids
                         position,
                         rec, //source
                         Color.White,
-                        (float)(((_elapsedTime / 10000.0) * (((x + y) % 2 == 0) ? MathHelper.TwoPi : -MathHelper.TwoPi))),//rotation
+                        (float) (((_elapsedTime/10000.0)*(((x + y)%2 == 0) ? MathHelper.TwoPi : -MathHelper.TwoPi))),
+                        //rotation
                         new Vector2((float) (width/2.0), (float) (height/2.0)), //origin
                         Scale,
                         SpriteEffects.None,
