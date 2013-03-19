@@ -54,7 +54,7 @@ namespace Asteroids
                         position,
                         rec,//source
                         Color.White,
-                        ((x + y) % 2 == 0)?1:-1 * (float)(((elapsedTime % 1000.0 /1000.0) * (MathHelper.TwoPi))),//rotation
+                        (float)(((elapsedTime / 1000.0) * (((x + y) % 2 == 0) ? MathHelper.TwoPi : -MathHelper.TwoPi))),//rotation
                         new Vector2(width/2,height/2),//origin
                         Scale,
                         SpriteEffects.None,
