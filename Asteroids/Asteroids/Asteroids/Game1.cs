@@ -315,6 +315,53 @@ namespace Asteroids
             {
                 if (projectile.Active)
                 {
+                    if (projectile.Hostile)
+                    {
+                        if (projectile.GetCircle().Intersects(_player.GetCircle()))
+                        {
+                            if (Circle.Intersects(projectile.GetCircles(), _player.GetCircles()))
+                            {
+                                projectile.Active = false;
+                                newLife();
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var enemy in _enemies)
+                        {
+                            if (projectile.GetCircle().Intersects(enemy.GetCircle()))
+                            {
+                                if (Circle.Intersects(projectile.GetCircles(), enemy.GetCircles()))
+                                {
+                                    if (enemy.Accurate)
+                                    {
+                                        //TODO fix this
+                                       // AddPoints(1000);
+                                    }
+                                    else
+                                    {
+                                       // AddPoints(200);
+                                    }
+                                    enemy.Active = false;
+                                    projectile.Active = false;
+                                    var explosion = new Explosion
+                                    {
+                                        Active = true,
+                                        Direction = 0,
+                                        Position = enemy.Position,
+                                        Scale = (float)enemy.Scale,
+                                        Texture = _ufoTexture,
+                                        Velocity = new Vector2(2, 0)
+                                    };
+                                    _explosions.Add(explosion);
+                                }
+                            }
+                        }
+                    }
+
+
                     foreach (Asteroid asteroid in _asteroids)
                     {
                         if (asteroid.Active)
@@ -351,33 +398,28 @@ namespace Asteroids
                 if (asteroid.GetCircle().Intersects(_player.GetCircle())
                     && Circle.Intersects(asteroid.GetCircles(), _player.GetCircles()))
                 {
-                    _playerExplosion.Play();
-                    var explosion = new Explosion
+                    newLife();
+                }
+            }
+
+            foreach(Satellite ufo in _enemies)
+            {
+                if(ufo.GetCircle().Intersects(_player.GetCircle()))
+                {
+                    if(Circle.Intersects(ufo.GetCircles(), _player.GetCircles()))
+                    {
+                        newLife();
+                        ufo.Active = false;
+                        var explosion = new Explosion
                         {
                             Active = true,
-                            Direction = _player.Angle,
-                            Position =
-                                _player.Position -
-                                new Vector2((float) (_player.Width/2.0), (float) (_player.Height/2.0)),
-                            Scale = 1.0f,
-                            Texture = _player.Texture,
-                            Velocity = _player.Velocity
+                            Direction = 0,
+                            Position = ufo.Position,
+                            Scale = (float)ufo.Scale,
+                            Texture = _ufoTexture,
+                            Velocity = new Vector2(2, 0)
                         };
-
-                    _explosions.Add(explosion);
-                    var lives = _player.Lives - 1;
-                    _player = new Player();
-                    var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
-                                                     + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
-                                                     ,
-                                                     GraphicsDevice.Viewport.TitleSafeArea.Y
-                                                     + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
-                    _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, lives);
-                    if (_player.Lives < 0)
-                    {
-                        _running = false;
-                        _menu.MainMenuIndex = _menu.Screens.IndexOf(_gameOver);
-                        _menu.SelectedMenuScreen = _menu.MainMenuIndex;
+                        _explosions.Add(explosion);
                     }
                 }
             }
@@ -550,6 +592,38 @@ namespace Asteroids
                     ufo.Initialize(_ufoTexture, new Vector2(-50, _rand.Next(50, GraphicsDevice.Viewport.Height - 50)), false, 1.0);
                 }
                 _enemies.Add(ufo);
+            }
+        }
+
+        private void newLife()
+        {
+            _playerExplosion.Play();
+            var explosion = new Explosion
+            {
+                Active = true,
+                Direction = _player.Angle,
+                Position =
+                    _player.Position -
+                    new Vector2((float)(_player.Width / 2.0), (float)(_player.Height / 2.0)),
+                Scale = 1.0f,
+                Texture = _player.Texture,
+                Velocity = _player.Velocity
+            };
+
+            _explosions.Add(explosion);
+            var lives = _player.Lives - 1;
+            _player = new Player();
+            var playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Width / 2
+                                             ,
+                                             GraphicsDevice.Viewport.TitleSafeArea.Y
+                                             + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+            _player.Initialize(GraphicsDevice.Viewport, _playerTexture, playerPosition, lives);
+            if (_player.Lives < 0)
+            {
+                _running = false;
+                _menu.MainMenuIndex = _menu.Screens.IndexOf(_gameOver);
+                _menu.SelectedMenuScreen = _menu.MainMenuIndex;
             }
         }
     }

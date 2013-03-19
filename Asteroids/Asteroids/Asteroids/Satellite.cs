@@ -9,9 +9,10 @@ namespace Asteroids
         private Texture2D _texture;
         private Vector2 _position;
         public Vector2 Position { get { return _position; } }
-        public bool Active {get; private set;}
+        public bool Active {get; set;}
         public bool Accurate { get; private set; }
         private double _scale;
+        public double Scale { get { return _scale; } }
         public long LastFired { get; set; }
 
         private double Radius
