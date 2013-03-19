@@ -13,9 +13,6 @@ namespace Asteroids
         private double _radians;
         private Viewport _viewport;
 
-        private double _x;
-
-        private double _y;
         public Texture2D Texture { get; private set; }
 
         public double Radians
@@ -51,19 +48,18 @@ namespace Asteroids
         {
             var change = (float) (_projectileMoveSpeed*delta/1000.0);
             Position.X += change;
-            _x += change*Math.Cos(_radians);
-            _y += change*Math.Sin(_radians);
-            if (_x > _viewport.Width + Texture.Width)
-                _x = -Texture.Width + 1;
-            else if (_x < -Texture.Width)
-                _x = _viewport.Width;
-            else if (_y < -Texture.Height)
-                _y = _viewport.Height;
-            else if (_y > _viewport.Height + Texture.Height)
-                _y = -Height + 1;
+            var x = Position.X + change*Math.Cos(_radians);
+            var y = Position.Y + change * Math.Sin(_radians);
+            if (x > _viewport.Width + Texture.Width)
+                x = -Texture.Width + 1;
+            else if (x < -Texture.Width)
+                x = _viewport.Width;
+            else if (y < -Texture.Height)
+                y = _viewport.Height;
+            else if (y > _viewport.Height + Texture.Height)
+                y = -Height + 1;
 
-            Position.X = (int) _x;
-            Position.Y = (int) _y;
+            Position = new Vector2((float) x,(float) y);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -86,7 +82,7 @@ namespace Asteroids
         public Circle GetCircle()
         {
             double radius = Texture.Width/2.0*Scale;
-            return new Circle(_x, _y, radius);
+            return new Circle(Position, radius);
         }
 
         public IEnumerable<Circle> GetCircles()
@@ -107,8 +103,7 @@ namespace Asteroids
 
             _projectileMoveSpeed = speed;
 
-            _x = position.X;
-            _y = position.Y;
+            Position = position;
 
             _radians = radians;
 

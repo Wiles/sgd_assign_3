@@ -22,7 +22,7 @@ namespace Asteroids
 
         public Circle GetCircle()
         {
-            return new Circle(0, 0, 0);
+            return new Circle(Vector2.Zero, 0);
         }
 
         public IEnumerable<Circle> GetCircles()

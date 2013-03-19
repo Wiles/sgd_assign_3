@@ -8,17 +8,15 @@ namespace Asteroids
 {
     internal class Circle
     {
-        public Circle(double x, double y, double radius)
+        public Circle(Vector2 position, double radius)
         {
-            X = x;
-            Y = y;
+            Position = position;
             Radius = radius;
         }
 
         public static Texture2D Texture { get; set; }
 
-        public double X { get; set; }
-        public double Y { get; set; }
+        public Vector2 Position { get; private set; }
         public double Radius { get; set; }
 
         public bool Intersects(Circle that)
@@ -27,8 +25,8 @@ namespace Asteroids
             {
                 return false;
             }
-            double dx = X - that.X;
-            double dy = Y - that.Y;
+            double dx = Position.X - that.Position.X;
+            double dy = Position.Y - that.Position.Y;
             double radii = Radius + that.Radius;
             return (dx*dx) + (dy*dy) < radii*radii;
         }
@@ -39,7 +37,7 @@ namespace Asteroids
             {
                 spriteBatch.Draw(
                     Texture,
-                    new Vector2((float) X, (float) Y),
+                    new Vector2((float)Position.X, (float)Position.Y),
                     null,
                     Color.White,
                     0f,

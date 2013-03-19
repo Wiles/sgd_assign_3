@@ -7,8 +7,7 @@ namespace Asteroids
     internal class Satellite : IEntity
     {
         private Texture2D _texture;
-        private double X { get; set; }
-        private double Y { get; set; }
+        private Vector2 _position;
 
         private double Radius
         {
@@ -19,23 +18,23 @@ namespace Asteroids
 
         public Circle GetCircle()
         {
-            return new Circle(X, Y, Radius);
+            return new Circle(_position, Radius);
         }
 
         public IEnumerable<Circle> GetCircles()
         {
             return new[]
                 {
-                    new Circle(X, Y - Radius/2, Radius/3),
-                    new Circle(X, Y, Radius/2),
-                    new Circle(X + Radius/2.5, Y, Radius/2),
-                    new Circle(X - Radius/2.5, Y, Radius/2)
+                    new Circle(_position, Radius/2),
+                    new Circle(new Vector2( _position.X, (float) (_position.Y - Radius/2.0)), Radius/3.0),
+                    new Circle(new Vector2( (float) (_position.X + Radius/2.5), _position.Y), Radius/2.0),
+                    new Circle(new Vector2( (float) (_position.X - Radius/2.5), _position.Y), Radius/2.0)
                 };
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, new Vector2((float) X, (float) Y), null, Color.White, 0,
+            spriteBatch.Draw(_texture, _position, null, Color.White, 0,
                              new Vector2((int) (_texture.Width/2.0), (int) (_texture.Height/2.0)), 1f,
                              SpriteEffects.None, 0f);
 
@@ -53,8 +52,7 @@ namespace Asteroids
 
         public void Initialize(Texture2D texture, Vector2 position)
         {
-            X = position.X;
-            Y = position.Y;
+            _position = position;
             _texture = texture;
         }
     }
