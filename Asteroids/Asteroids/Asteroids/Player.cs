@@ -30,7 +30,7 @@ namespace Asteroids
         private long LastDeath { get; set; }
 
         public Vector2 Velocity { get; private set; }
-
+        
         public int Width
         {
             get { return Texture.Width; }
@@ -48,7 +48,7 @@ namespace Asteroids
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
             LastDeath += delta;
-            double percent = delta/1000.0;
+            var percent = delta/1000.0;
             if (input.Left())
             {
                 Angle -= RadPerSecond*percent;
@@ -60,12 +60,12 @@ namespace Asteroids
             if (input.Thrusters())
             {
                 Velocity += new Vector2(
-                    (float) (Math.Cos(Angle)*AccelerationPerSecond*percent),
-                    (float) (Math.Sin(Angle)*AccelerationPerSecond*percent));
+                    (float) (Math.Cos(Angle) * AccelerationPerSecond * percent),
+                    (float) (Math.Sin(Angle) * AccelerationPerSecond * percent));
             }
             else
             {
-                Velocity = new Vector2((float) (Velocity.X*.98), (float) (Velocity.Y*.98));
+                Velocity = new Vector2((float) (Velocity.X *  .98), (float) (Velocity.Y * .98));
             }
 
             Position += Velocity;
@@ -123,33 +123,20 @@ namespace Asteroids
             return new[]
                 {
                     new Circle(Position, Width/3.0),
-                    new Circle(
-                        new Vector2((float) (Position.X + Width/3.0*Math.Cos(Angle)),
-                                    (float) (Position.Y + Width/3.0*Math.Sin(Angle))), Width/10.0),
-                    new Circle(
-                        new Vector2((float) (Position.X + Width/2.5*Math.Cos(Angle)),
-                                    (float) (Position.Y + Width/2.5*Math.Sin(Angle))), Width/15.0),
+                    new Circle(new Vector2((float) (Position.X + Width/3.0*Math.Cos(Angle)), (float) (Position.Y + Width/3.0*Math.Sin(Angle))), Width/10.0),
+                    new Circle(new Vector2((float) (Position.X + Width/2.5*Math.Cos(Angle)), (float) (Position.Y + Width/2.5*Math.Sin(Angle))), Width/15.0),
                     new Circle(new Vector2((float) (Position.X + Width/3.0*Math.Cos(Angle + MathHelper.ToRadians(135))),
-                                           (float) (Position.Y + Width/3.0*Math.Sin(Angle + MathHelper.ToRadians(135)))),
-                               Width/7.0),
+                               (float) (Position.Y + Width/3.0*Math.Sin(Angle + MathHelper.ToRadians(135)))), Width/7.0),
                     new Circle(new Vector2((float) (Position.X + Width/2.5*Math.Cos(Angle + MathHelper.ToRadians(135))),
-                                           (float) (Position.Y + Width/2.5*Math.Sin(Angle + MathHelper.ToRadians(135)))),
-                               Width/6.0),
+                               (float) (Position.Y + Width/2.5*Math.Sin(Angle + MathHelper.ToRadians(135)))), Width/6.0),
                     new Circle(new Vector2((float) (Position.X + Width/2.0*Math.Cos(Angle + MathHelper.ToRadians(135))),
-                                           (float) (Position.Y + Width/2.0*Math.Sin(Angle + MathHelper.ToRadians(135)))),
-                               Width/9.0),
-                    new Circle(
-                        new Vector2((float) (Position.X + Width/3.0*Math.Cos(Angle + MathHelper.ToRadians(-135))),
-                                    (float) (Position.Y + Width/3.0*Math.Sin(Angle + MathHelper.ToRadians(-135)))),
-                        Width/7.0),
-                    new Circle(
-                        new Vector2((float) (Position.X + Width/2.5*Math.Cos(Angle + MathHelper.ToRadians(-135))),
-                                    (float) (Position.Y + Width/2.5*Math.Sin(Angle + MathHelper.ToRadians(-135)))),
-                        Width/6.0),
-                    new Circle(
-                        new Vector2((float) (Position.X + Width/2.0*Math.Cos(Angle + MathHelper.ToRadians(-135))),
-                                    (float) (Position.Y + Width/2.0*Math.Sin(Angle + MathHelper.ToRadians(-135)))),
-                        Width/9.0)
+                               (float) (Position.Y + Width/2.0*Math.Sin(Angle + MathHelper.ToRadians(135)))), Width/9.0),
+                    new Circle(new Vector2((float) (Position.X + Width/3.0*Math.Cos(Angle + MathHelper.ToRadians(-135))),
+                               (float) (Position.Y + Width/3.0*Math.Sin(Angle + MathHelper.ToRadians(-135)))), Width/7.0),
+                    new Circle(new Vector2((float) (Position.X + Width/2.5*Math.Cos(Angle + MathHelper.ToRadians(-135))),
+                               (float) (Position.Y + Width/2.5*Math.Sin(Angle + MathHelper.ToRadians(-135)))), Width/6.0),
+                    new Circle(new Vector2((float) (Position.X + Width/2.0*Math.Cos(Angle + MathHelper.ToRadians(-135))),
+                               (float) (Position.Y + Width/2.0*Math.Sin(Angle + MathHelper.ToRadians(-135)))), Width/9.0)
                 };
         }
 

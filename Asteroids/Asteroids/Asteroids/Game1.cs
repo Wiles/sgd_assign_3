@@ -12,7 +12,7 @@ namespace Asteroids
         private const float MaxSpeed = 500.0f;
         private const float ProjectileMoveSpeed = MaxSpeed + 1;
         private const long ExtraLife = 10000L;
-        private const long Ufo = 50;
+        private const long Ufo = 5000;
         private const long SmallUfo = 3;
         private readonly List<Asteroid> _asteroids = new List<Asteroid>();
         private readonly List<Projectile> _projectiles = new List<Projectile>();
@@ -154,7 +154,7 @@ namespace Asteroids
 
             e = new Dictionary<string, Action>
                 {
-                    {"Fire/Select        Space/R1", null},
+                    {"Fire/Select        Space/RT", null},
                     {"Pause/Back         Esc/Back", null},
                     {"Thrusters       Up/D-pad up", null},
                     {"Up            Left/D-pad Up", null},
@@ -327,6 +327,7 @@ namespace Asteroids
                     }
                     else
                     {
+                        var pointsEarned = 0;
                         foreach (Satellite enemy in _enemies)
                         {
                             if (projectile.GetCircle().Intersects(enemy.GetCircle()))
@@ -335,12 +336,11 @@ namespace Asteroids
                                 {
                                     if (enemy.Accurate)
                                     {
-                                        //TODO fix this
-                                        // AddPoints(1000);
+                                        pointsEarned += 1000;
                                     }
                                     else
                                     {
-                                        // AddPoints(200);
+                                        pointsEarned += 200;
                                     }
                                     enemy.Active = false;
                                     projectile.Active = false;
@@ -352,9 +352,14 @@ namespace Asteroids
                                             Texture = _ufoTexture,
                                             Velocity = new Vector2(2, 0)
                                         };
+                                    _explosionSound.Play();
                                     _explosions.Add(explosion);
                                 }
                             }
+                        }
+                        if (pointsEarned != 0)
+                        {
+                            AddPoints(pointsEarned);
                         }
                     }
 
@@ -382,7 +387,6 @@ namespace Asteroids
                                             break;
                                     }
                                 }
-                                _explosionSound.Play();
                                 break;
                             }
                         }
@@ -415,6 +419,7 @@ namespace Asteroids
                                 Texture = _ufoTexture,
                                 Velocity = new Vector2(2, 0)
                             };
+                        _explosionSound.Play();
                         _explosions.Add(explosion);
                     }
                 }
@@ -435,13 +440,13 @@ namespace Asteroids
                     {
                         var asteroid = new Asteroid();
                         asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position,
-                                            parent.Radians - _rand.Next(10, 30)*Math.PI/180, parent.Speed,
+                                            parent.Radians - _rand.Next(10, 30)*Math.PI/180, parent.Speed * 1.1f,
                                             parent.Generation + 1);
                         _asteroids.Add(asteroid);
 
                         asteroid = new Asteroid();
                         asteroid.Initialize(GraphicsDevice.Viewport, _asteroidTexture, parent.Position,
-                                            parent.Radians + _rand.Next(10, 30)*Math.PI/180, parent.Speed,
+                                            parent.Radians + _rand.Next(10, 30) * Math.PI / 180, parent.Speed * 1.1f,
                                             parent.Generation + 1);
                         _asteroids.Add(asteroid);
                     }
@@ -452,8 +457,9 @@ namespace Asteroids
                                 parent.Position - new Vector2((float) (parent.Width/2.0), (float) (parent.Height/2.0)),
                             Scale = (float) parent.Scale,
                             Texture = parent.Texture,
-                            Velocity = new Vector2() //TODO
+                            Velocity = new Vector2()
                         };
+                    _explosionSound.Play();
                     _explosions.Add(explosion);
                     _asteroids.RemoveAt(i);
                     if (_asteroids.Count == 0)
@@ -594,7 +600,6 @@ namespace Asteroids
 
         private void NewLife()
         {
-            _playerExplosion.Play();
             var explosion = new Explosion
                 {
                     Active = true,
@@ -606,6 +611,7 @@ namespace Asteroids
                     Velocity = _player.Velocity
                 };
 
+            _playerExplosion.Play();
             _explosions.Add(explosion);
             int lives = _player.Lives - 1;
             _player = new Player();

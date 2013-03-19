@@ -8,8 +8,8 @@ namespace Asteroids
     internal class Projectile : IEntity
     {
         public bool Active;
-        private Vector2 _distanceTravelled;
         private Vector2 _position;
+        private Vector2 _distanceTravelled;
         private float _projectileMoveSpeed;
 
         private double _radians;
@@ -38,8 +38,8 @@ namespace Asteroids
             var travel = new Vector2((float) (_projectileMoveSpeed*percent*Math.Cos(_radians)),
                                      (float) (_projectileMoveSpeed*percent*Math.Sin(_radians)));
             _distanceTravelled += travel;
-            float x = _position.X + travel.X;
-            float y = _position.Y + travel.Y;
+            var x = _position.X + travel.X;
+            var y = _position.Y +  travel.Y;
 
             if (x > _viewport.Width + Width)
                 x = -Width + 1;
@@ -50,7 +50,7 @@ namespace Asteroids
             else if (y > _viewport.Height + Height)
                 y = -Height + 1;
 
-            _position = new Vector2(x, y);
+            _position = new Vector2(x,y);
             if (_distanceTravelled.Length() > _viewport.Width/2.0)
             {
                 Active = false;
@@ -79,8 +79,7 @@ namespace Asteroids
 
         #endregion
 
-        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed,
-                               bool hostile)
+        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed, bool hostile)
         {
             _texture = texture;
             _position = position;
