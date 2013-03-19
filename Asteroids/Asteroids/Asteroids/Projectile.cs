@@ -1,72 +1,55 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
     internal class Projectile : IEntity
     {
         public bool Active;
-        public Vector2 Position;
+        private Vector2 _position;
+        private Vector2 _distanceTravelled = new Vector2();
         private float _projectileMoveSpeed;
 
         private double _radians;
         private Texture2D _texture;
 
         private Viewport _viewport;
-        private double _x;
-        private double _xTravel;
-        private double _y;
-        private double _yTravel;
 
-        public int Width
+        private int Width
         {
             get { return _texture.Width; }
         }
 
-        public int Height
+        private int Height
         {
             get { return _texture.Height; }
         }
 
-        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed)
-        {
-            _texture = texture;
-            Position = position;
-            _viewport = viewport;
-
-            Active = true;
-
-            _projectileMoveSpeed = speed;
-
-            _x = position.X;
-            _y = position.Y;
-
-            _radians = radians;
-        }
+        #region IEntity Members
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
-            double percent = delta / 1000.0;
-            Position.X += (float)(_projectileMoveSpeed * percent);
+            double percent = delta/1000.0;
 
-            _x += _projectileMoveSpeed * percent * Math.Cos(_radians);
-            _y += _projectileMoveSpeed * percent * Math.Sin(_radians);
-            _xTravel += _projectileMoveSpeed * percent * Math.Cos(_radians);
-            _yTravel += _projectileMoveSpeed * percent * Math.Sin(_radians);
-            if (_x > _viewport.Width + Width)
-                _x = -Width + 1;
-            else if (_x < -Width)
-                _x = _viewport.Width;
-            else if (_y < -Height)
-                _y = _viewport.Height;
-            else if (_y > _viewport.Height + Height)
-                _y = -Height + 1;
+            var travel = new Vector2((float) (_projectileMoveSpeed*percent*Math.Cos(_radians)),
+                                     (float) (_projectileMoveSpeed*percent*Math.Sin(_radians)));
+            _distanceTravelled += travel;
+            var x = _position.X + travel.X;
+            var y = _position.Y +  travel.Y;
 
-            Position.X = (int) _x;
-            Position.Y = (int) _y;
-            if (new Vector2((int) _xTravel, (int) _yTravel).Length() > _viewport.Width/2.0)
+            if (x > _viewport.Width + Width)
+                x = -Width + 1;
+            else if (x < -Width)
+                x = _viewport.Width;
+            else if (y < -Height)
+                y = _viewport.Height;
+            else if (y > _viewport.Height + Height)
+                y = -Height + 1;
+
+            _position = new Vector2(x,y);
+            if (_distanceTravelled.Length() > _viewport.Width/2.0)
             {
                 Active = false;
             }
@@ -74,9 +57,9 @@ namespace Asteroids
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, Position, null, Color.White, 0f,
-                             new Vector2((int)(Width / 2.0), (int)(Height / 2.0)), 1f, SpriteEffects.None, 0f);
-            foreach (var circle in GetCircles())
+            spriteBatch.Draw(_texture, _position, null, Color.White, 0f,
+                             new Vector2((int) (Width/2.0), (int) (Height/2.0)), 1f, SpriteEffects.None, 0f);
+            foreach (Circle circle in GetCircles())
             {
                 circle.Draw(spriteBatch);
             }
@@ -84,13 +67,27 @@ namespace Asteroids
 
         public Circle GetCircle()
         {
-            double radius = Width/2.0;
-            return new Circle(_x, _y, radius);
+            return new Circle(_position, Width/2.0);
         }
-        
-        public Circle[] GetCircles()
+
+        public IEnumerable<Circle> GetCircles()
         {
-            return new Circle[] { GetCircle() };
+            return new[] {GetCircle()};
+        }
+
+        #endregion
+
+        public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed)
+        {
+            _texture = texture;
+            _position = position;
+            _viewport = viewport;
+
+            Active = true;
+
+            _projectileMoveSpeed = speed;
+
+            _radians = radians;
         }
     }
 }

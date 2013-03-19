@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
-    class Input
+    internal class Input
     {
-        private KeyboardState _keyboard;
         private GamePadState _gamePad;
+        private KeyboardState _keyboard;
 
         public Input(KeyboardState keyboard, GamePadState gamepad)
         {

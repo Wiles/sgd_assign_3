@@ -1,156 +1,141 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
-    class Menu : IEntity
+    internal class Menu : IEntity
     {
-        private Viewport _viewport;
+        private bool _down;
+        private bool _enter;
+        private bool _escape;
         private SpriteFont _font;
-        private Game1 _game;
+        private SoundEffect _menuBack;
 
         private SoundEffect _menuMove;
         private SoundEffect _menuSelect;
-        private SoundEffect _menuBack;
+        private bool _up;
+        private Viewport _viewport;
 
-        public int selectedMenuScreen { get; set; }
+        public Menu()
+        {
+            Screens = new List<MenuScreen>();
+        }
+
+        public int SelectedMenuScreen { get; set; }
 
         public int MainMenuIndex { get; set; }
 
-        private List<MenuScreen> screens = new List<MenuScreen>();
-        public List<MenuScreen> Screens
-        {
-            get { return screens; }
-        }
+        public List<MenuScreen> Screens { get; private set; }
 
-        private bool down;
-        private bool up;
-        private bool enter;
-        private bool escape;
-
-        public void Initialize(Game1 game, Viewport viewport, SpriteFont font, SoundEffect move, SoundEffect select, SoundEffect back)
-        {
-            _viewport = viewport;
-            _font = font;
-            _game = game;
-            _menuMove = move;
-            _menuSelect = select;
-            _menuBack = back;
-        }
+        #region IEntity Members
 
         public Circle GetCircle()
         {
-            return new Circle(0,0,0);
+            return new Circle(Vector2.Zero, 0);
         }
 
-        public Circle[] GetCircles()
+        public IEnumerable<Circle> GetCircles()
         {
-            return new Circle[]{GetCircle()};
+            return new[] {GetCircle()};
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            var screen = screens[selectedMenuScreen];
-                var textSize = _font.MeasureString(screen.Title);
-                spriteBatch.DrawString(_font,
-                    screen.Title,
-                    new Vector2((_viewport.Width / 2) + 2, textSize.Y + 2),
-                    Color.White, 0.0f,
-                    new Vector2(textSize.X / 2, textSize.Y / 2),
-                    1.0f, SpriteEffects.None, 0.0f);
-            foreach(var i in Enumerable.Range(0, screen.elements.Count))
+            MenuScreen screen = Screens[SelectedMenuScreen];
+            Vector2 textSize = _font.MeasureString(screen.Title);
+            spriteBatch.DrawString(_font,
+                                   screen.Title,
+                                   new Vector2((_viewport.Width/2) + 2, textSize.Y + 2),
+                                   Color.White, 0.0f,
+                                   new Vector2(textSize.X/2, textSize.Y/2),
+                                   1.0f, SpriteEffects.None, 0.0f);
+            foreach (int i in Enumerable.Range(0, screen.Elements.Count))
             {
-                var ele = screen.elements.Keys.ToArray()[i];
-                var text = (i == screen.selectedIndex) ? string.Format("> {0} <", ele) : ele;
+                string ele = screen.Elements.Keys.ToArray()[i];
+                string text = (i == screen.SelectedIndex) ? string.Format("> {0} <", ele) : ele;
 
-                var eleSize = _font.MeasureString(text);
+                Vector2 eleSize = _font.MeasureString(text);
                 spriteBatch.DrawString(_font,
-                    text,
-                    new Vector2((_viewport.Width / 2) + 2, (int)(textSize.Y * (i + 2.5))),
-                    Color.White, 0.0f,
-                    new Vector2(eleSize.X / 2, textSize.Y / 2),
-                    1.0f, SpriteEffects.None, 0.0f);
+                                       text,
+                                       new Vector2((_viewport.Width/2) + 2, (int) (textSize.Y*(i + 2.5))),
+                                       Color.White, 0.0f,
+                                       new Vector2(eleSize.X/2, textSize.Y/2),
+                                       1.0f, SpriteEffects.None, 0.0f);
             }
 
-            if (screen != screens[MainMenuIndex])
+            if (screen != Screens[MainMenuIndex])
             {
-                var text = (screen.selectedIndex == screen.elements.Count) ? string.Format("> {0} <", "Back") : "Back";
-                var eleSize = _font.MeasureString(text);
+                string text = (screen.SelectedIndex == screen.Elements.Count)
+                                  ? string.Format("> {0} <", "Back")
+                                  : "Back";
+                Vector2 eleSize = _font.MeasureString(text);
                 spriteBatch.DrawString(_font,
-                    text,
-                    new Vector2((_viewport.Width / 2) + 2, textSize.Y * (screen.elements.Count + 3)),
-                    Color.White, 0.0f,
-                    new Vector2(eleSize.X / 2, textSize.Y / 2),
-                    1.0f, SpriteEffects.None, 0.0f);
-                
+                                       text,
+                                       new Vector2((_viewport.Width/2) + 2, textSize.Y*(screen.Elements.Count + 3)),
+                                       Color.White, 0.0f,
+                                       new Vector2(eleSize.X/2, textSize.Y/2),
+                                       1.0f, SpriteEffects.None, 0.0f);
             }
         }
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
-            var screen = screens[selectedMenuScreen];
-            var max = (screens[selectedMenuScreen] == screens[MainMenuIndex]) ? screen.elements.Count : screen.elements.Count + 1;
+            MenuScreen screen = Screens[SelectedMenuScreen];
+            int max = (Screens[SelectedMenuScreen] == Screens[MainMenuIndex])
+                          ? screen.Elements.Count
+                          : screen.Elements.Count + 1;
             if (input.Down())
             {
-                if(down == false)
+                if (_down == false)
                 {
-                    down = true;
+                    _down = true;
                     _menuMove.Play();
-                    screen.selectedIndex += 1;
-                    if (screen.selectedIndex >= max)
+                    screen.SelectedIndex += 1;
+                    if (screen.SelectedIndex >= max)
                     {
-                        screen.selectedIndex = 0;
+                        screen.SelectedIndex = 0;
                     }
                 }
             }
             else
             {
-                down = false;
+                _down = false;
             }
             if (input.Up())
             {
-                if (up == false)
+                if (_up == false)
                 {
-                    up = true;
+                    _up = true;
                     _menuMove.Play();
-                    screen.selectedIndex -= 1;
-                    if (screen.selectedIndex < 0)
+                    screen.SelectedIndex -= 1;
+                    if (screen.SelectedIndex < 0)
                     {
-                        screen.selectedIndex = max - 1;
+                        screen.SelectedIndex = max - 1;
                     }
                 }
             }
             else
             {
-                up = false;
+                _up = false;
             }
-            if(input.Fire())
+            if (input.Fire())
             {
-                if (enter == false)
+                if (_enter == false)
                 {
-                    enter = true;
-                    var actions = screen.elements.Values.ToArray();
-                    if (screen.selectedIndex == actions.Count())
+                    _enter = true;
+                    Action[] actions = screen.Elements.Values.ToArray();
+                    if (screen.SelectedIndex == actions.Count())
                     {
                         _menuBack.Play();
-                        if (screen.Parent == null)
-                        {
-                            this.selectedMenuScreen = MainMenuIndex;
-                        }
-                        else
-                        {
-                            this.selectedMenuScreen = this.screens.IndexOf(screen.Parent);
-                        }
+                        SelectedMenuScreen = screen.Parent == null ? MainMenuIndex : Screens.IndexOf(screen.Parent);
                     }
                     else
                     {
-                        var action = screen.elements.Values.ToArray()[screen.selectedIndex];
+                        Action action = screen.Elements.Values.ToArray()[screen.SelectedIndex];
                         if (action != null)
                         {
                             _menuSelect.Play();
@@ -161,36 +146,48 @@ namespace Asteroids
             }
             else
             {
-                enter = false;
+                _enter = false;
             }
 
             if (input.Escape())
             {
-                if (escape == false)
+                if (_escape == false)
                 {
-                    escape = true;
+                    _escape = true;
                     if (screen.Parent != null)
                     {
                         _menuBack.Play();
 
-                        selectedMenuScreen = screens.IndexOf(screen.Parent);
+                        SelectedMenuScreen = Screens.IndexOf(screen.Parent);
                     }
-                    else if(screen != screens[MainMenuIndex]){
+                    else if (screen != Screens[MainMenuIndex])
+                    {
                         _menuBack.Play();
-                        selectedMenuScreen = MainMenuIndex;
-                    
+                        SelectedMenuScreen = MainMenuIndex;
                     }
                 }
             }
             else
             {
-                escape = false;
+                _escape = false;
             }
+        }
+
+        #endregion
+
+        public void Initialize(Viewport viewport, SpriteFont font, SoundEffect move, SoundEffect select,
+                               SoundEffect back)
+        {
+            _viewport = viewport;
+            _font = font;
+            _menuMove = move;
+            _menuSelect = select;
+            _menuBack = back;
         }
 
         public void AddMenuScreen(MenuScreen screen)
         {
-            screens.Add(screen);
+            Screens.Add(screen);
         }
     }
 }

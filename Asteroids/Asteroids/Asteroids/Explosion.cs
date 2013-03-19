@@ -1,61 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Asteroids
 {
-    class Explosion:IEntity
+    internal class Explosion : IEntity
     {
-        private readonly int SEGMENTS = 4;
+        private const int Segments = 4;
+        private long _elapsedTime;
 
-        private Random rand = new Random();
-        public bool Active {get;set;}
+        public bool Active { get; set; }
         public Vector2 Position { get; set; }
-        public double Speed { get; set; }
+        public Vector2 Velocity { get; set; }
         public double Direction { get; set; }
-        public double Rotation { get; set; }
         public Texture2D Texture { get; set; }
         public float Scale { get; set; }
-        private long elapsedTime;
+
+        #region IEntity Members
 
         public Circle GetCircle()
         {
-            return new Circle(0, 0, 0);
+            return new Circle(Vector2.Zero, 0);
         }
 
-        public Circle[] GetCircles()
+        public IEnumerable<Circle> GetCircles()
         {
-            return new Circle[] { GetCircle()};
+            return new[] {GetCircle()};
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var x in Enumerable.Range(0, SEGMENTS))
+            foreach (int x in Enumerable.Range(0, Segments))
             {
-                foreach (var y in Enumerable.Range(0, SEGMENTS))
+                foreach (int y in Enumerable.Range(0, Segments))
                 {
-                    var position = Position;
-                    var width = Texture.Width / SEGMENTS;
-                    var height = Texture.Height / SEGMENTS;
-                    var rec = new Rectangle( width * x, width * y , width, height);
+                    Vector2 position = Position;
+                    int width = Texture.Width/Segments;
+                    int height = Texture.Height/Segments;
+                    var rec = new Rectangle(width*x, width*y, width, height);
 
-                    position += new Vector2() + new Vector2(width * x * Scale, height * y * Scale);
-                    var centre = Position + new Vector2(Texture.Width / 2 * Scale, Texture.Height / 2 * Scale);
-                    var angle = Math.Atan2(position.Y - centre.Y, position.X - centre.X);
+                    position += new Vector2() + new Vector2(width*x*Scale, height*y*Scale);
+                    Vector2 centre = Position +
+                                     new Vector2((float) (Texture.Width/2.0*Scale), (float) (Texture.Height/2.0*Scale));
+                    double angle = Math.Atan2(position.Y - centre.Y, position.X - centre.X);
 
-                    position.X += (float)((50.0 * elapsedTime / 1000.0) * Math.Cos(angle));
-                    position.Y += (float)((50.0 * elapsedTime / 1000.0) * Math.Sin(angle));
+                    position.X += (float) ((50.0*_elapsedTime/1000.0)*Math.Cos(angle));
+                    position.Y += (float) ((50.0*_elapsedTime/1000.0)*Math.Sin(angle));
 
                     spriteBatch.Draw(
                         Texture,
                         position,
-                        rec,//source
+                        rec, //source
                         Color.White,
-                        (float)(((elapsedTime / 1000.0) * (((x + y) % 2 == 0) ? MathHelper.TwoPi : -MathHelper.TwoPi))),//rotation
-                        new Vector2(width/2,height/2),//origin
+                        (float)(((_elapsedTime / 1000.0) * (((x + y) % 2 == 0) ? MathHelper.TwoPi : -MathHelper.TwoPi))),//rotation
+                        new Vector2((float) (width/2.0), (float) (height/2.0)), //origin
                         Scale,
                         SpriteEffects.None,
                         0
@@ -66,12 +66,15 @@ namespace Asteroids
 
         public void Update(GraphicsDevice graphics, Input input, long delta)
         {
-            Position += new Vector2((float)(Speed * (delta / 1000.0) * Math.Cos(Direction)), (float)(Speed * (delta / 1000.0) * Math.Sin(Direction)));
+            Position += Velocity;
 
-            elapsedTime += delta;
-            if(elapsedTime > 1000){
+            _elapsedTime += delta;
+            if (_elapsedTime > 1000)
+            {
                 Active = false;
             }
         }
+
+        #endregion
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Asteroids
 {
@@ -11,19 +11,16 @@ namespace Asteroids
         public Vector2 Position;
         private float _projectileMoveSpeed;
         private double _radians;
-        public Texture2D Texture{get;set;}
         private Viewport _viewport;
 
-        private double _x;
+        public Texture2D Texture { get; private set; }
 
-        private double _y;
-        
         public double Radians
         {
             get { return _radians; }
         }
 
-        public int Generation { get; set; }
+        public int Generation { get; private set; }
 
         public double Scale
         {
@@ -45,6 +42,55 @@ namespace Asteroids
             get { return _projectileMoveSpeed; }
         }
 
+        #region IEntity Members
+
+        public void Update(GraphicsDevice graphics, Input input, long delta)
+        {
+            var change = (float) (_projectileMoveSpeed*delta/1000.0);
+            Position.X += change;
+            var x = Position.X + change*Math.Cos(_radians);
+            var y = Position.Y + change * Math.Sin(_radians);
+            if (x > _viewport.Width + Texture.Width)
+                x = -Texture.Width + 1;
+            else if (x < -Texture.Width)
+                x = _viewport.Width;
+            else if (y < -Texture.Height)
+                y = _viewport.Height;
+            else if (y > _viewport.Height + Texture.Height)
+                y = -Height + 1;
+
+            Position = new Vector2((float) x,(float) y);
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(Texture,
+                             Position,
+                             null,
+                             Color.White,
+                             0f,
+                             new Vector2((int) (Texture.Width/2.0), (int) (Texture.Width/2.0)),
+                             (float) Scale,
+                             SpriteEffects.None,
+                             0f);
+            foreach (Circle circle in GetCircles())
+            {
+                circle.Draw(spriteBatch);
+            }
+        }
+
+        public Circle GetCircle()
+        {
+            double radius = Texture.Width/2.0*Scale;
+            return new Circle(Position, radius);
+        }
+
+        public IEnumerable<Circle> GetCircles()
+        {
+            return new[] {GetCircle()};
+        }
+
+        #endregion
 
         public void Initialize(Viewport viewport, Texture2D texture, Vector2 position, double radians, float speed,
                                int generation)
@@ -57,59 +103,11 @@ namespace Asteroids
 
             _projectileMoveSpeed = speed;
 
-            _x = position.X;
-            _y = position.Y;
+            Position = position;
 
             _radians = radians;
 
             Generation = generation;
-        }
-
-        public void Update(GraphicsDevice graphics, Input input, long delta)
-        {
-            var change = (float)(_projectileMoveSpeed * delta / 1000.0);
-            Position.X += change;
-            _x += change * Math.Cos(_radians);
-            _y += change * Math.Sin(_radians);
-            if (_x > _viewport.Width + Texture.Width)
-                _x = -Texture.Width + 1;
-            else if (_x < -Texture.Width)
-                _x = _viewport.Width;
-            else if (_y < -Texture.Height)
-                _y = _viewport.Height;
-            else if (_y > _viewport.Height + Texture.Height)
-                _y = -Height + 1;
-
-            Position.X = (int) _x;
-            Position.Y = (int) _y;
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(Texture, 
-                Position, 
-                null, 
-                Color.White, 
-                0f,
-                new Vector2((int)(Texture.Width / 2.0), (int)(Texture.Width / 2.0)), 
-                (float)Scale, 
-                SpriteEffects.None, 
-                0f);
-            foreach (var circle in GetCircles())
-            {
-                circle.Draw(spriteBatch);
-            }
-        }
-
-        public Circle GetCircle()
-        {
-            double radius = Texture.Width/2.0*Scale;
-            return new Circle(_x, _y, radius);
-        }
-
-        public Circle[] GetCircles()
-        {
-            return new Circle[] { GetCircle() };
         }
     }
 }
