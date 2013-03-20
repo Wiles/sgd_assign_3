@@ -1,5 +1,5 @@
 ﻿//File:     IEntity.cs
-//Name:     Samuel Lewis (5821103)
+//Name:     Samuel Lewis (5821103) & Thomas Kempton (5781000)
 //Date:     2013-03-19
 //Class:    Simulation and Game Development
 //Ass:      3
